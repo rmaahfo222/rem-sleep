@@ -1,421 +1,806 @@
 <!DOCTYPE html>
-<!-- saved from url=(0049)file:///C:/Users/fntle/Downloads/dream_cycle.html -->
-<html lang="ko"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>드림 사이클 — 루시드 드리머를 위한 렘 수면 계산기</title>
-  <link rel="stylesheet" as="style" crossorigin="" href="./드림 사이클 — 루시드 드리머를 위한 렘 수면 계산기_files/pretendard.min.css">
+  <meta name="description" content="취침 시간과 수면 길이를 바탕으로 렘수면 주기와 루시드 드림 시도 시간을 정리해주는 계산기입니다.">
+  <title>루시드 드림 렘수면 주기 계산기</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
 
     :root {
-      --bg: #fbfbfd;
+      --bg: #f6f7fb;
       --surface: #ffffff;
-      --surface-2: #f5f5f7;
-      --text: #1d1d1f;
-      --text-2: #515154;
-      --text-3: #86868b;
-      --line: #d2d2d7;
-      --line-soft: #e8e8ed;
-      --accent: #5e5ce6;
-      --accent-soft: #ecebff;
-      --rem: #bf5af2;
-      --rem-soft: #f6e8ff;
-      --warn-soft: #fff4e0;
-      --good-soft: #e3f7e8;
-      --nrem: #c7c7cc;
-      --nrem-deep: #8e8e93;
-      --shadow-md: 0 8px 24px rgba(0,0,0,.06);
-      --radius-md: 18px;
-      --radius-lg: 28px;
-      --maxw: 1100px;
+      --surface-2: #eef3f8;
+      --text: #17191f;
+      --muted: #5f6773;
+      --soft: #8a93a3;
+      --line: #d8dee8;
+      --line-soft: #e8edf4;
+      --accent: #2563eb;
+      --accent-soft: #e9f0ff;
+      --rem: #b83280;
+      --rem-soft: #fce7f3;
+      --deep: #263241;
+      --light: #7b8794;
+      --wake: #d08700;
+      --good: #0f766e;
+      --good-soft: #e5f6f3;
+      --warn-soft: #fff6df;
+      --shadow: 0 14px 34px rgba(23, 25, 31, 0.08);
+      --radius: 8px;
+      --max: 1120px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
     }
 
     body {
-      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-      background: var(--bg);
+      margin: 0;
       color: var(--text);
-      letter-spacing: -0.01em;
-      line-height: 1.5;
+      background:
+        linear-gradient(180deg, rgba(233, 240, 255, 0.65), rgba(246, 247, 251, 0) 360px),
+        var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+      line-height: 1.6;
+      letter-spacing: 0;
     }
 
-    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
-    section { padding: clamp(56px, 9vw, 110px) 0; }
+    button, input {
+      font: inherit;
+    }
 
-    /* Top bar */
+    button {
+      border: 0;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .wrap {
+      width: min(100% - 40px, var(--max));
+      margin: 0 auto;
+    }
+
     .topbar {
-      position: sticky; top: 0; z-index: 50;
-      backdrop-filter: saturate(180%) blur(20px);
-      -webkit-backdrop-filter: saturate(180%) blur(20px);
-      background: rgba(251,251,253,0.78);
-      border-bottom: 1px solid rgba(0,0,0,0.04);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(246, 247, 251, 0.86);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(216, 222, 232, 0.75);
     }
+
     .topbar-inner {
-      display: flex; align-items: center; justify-content: space-between;
-      height: 48px; max-width: var(--maxw); margin: 0 auto; padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      width: 11px;
+      height: 11px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--rem), var(--good));
+      box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.1);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 8px;
+      color: var(--muted);
       font-size: 14px;
     }
-    .brand { display: flex; align-items: center; gap: 8px; font-weight: 600; }
-    .brand-dot {
-      width: 10px; height: 10px; border-radius: 50%;
-      background: linear-gradient(135deg, var(--accent), var(--rem));
-    }
-    .nav-links { display: flex; gap: 28px; color: var(--text-2); }
-    .nav-links a { color: inherit; text-decoration: none; }
-    .nav-links a:hover { color: var(--text); }
-    @media (max-width: 640px) { .nav-links { display: none; } }
 
-    /* Hero */
-    .hero { text-align: center; padding-top: clamp(80px, 12vw, 130px); padding-bottom: clamp(36px, 5vw, 56px); }
-    .eyebrow {
-      font-size: 13px; font-weight: 600; letter-spacing: 0.02em;
-      color: var(--accent); text-transform: uppercase;
-      margin-bottom: 16px;
-    }
-    h1 {
-      font-size: clamp(40px, 7vw, 76px);
-      line-height: 1.05; letter-spacing: -0.04em; font-weight: 700;
-      margin-bottom: 20px;
-    }
-    h1 .gradient {
-      background: linear-gradient(120deg, var(--accent) 0%, var(--rem) 100%);
-      -webkit-background-clip: text; background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .lead {
-      font-size: clamp(17px, 2.2vw, 22px); color: var(--text-2);
-      max-width: 660px; margin: 0 auto; line-height: 1.5;
-    }
-    .principle {
-      display: inline-block; margin-top: 28px;
-      font-size: 13px; color: var(--text-3); font-weight: 500;
-      padding: 8px 16px; border-radius: 999px;
-      background: var(--surface); border: 1px solid var(--line-soft);
+    .nav-links a {
+      padding: 8px 10px;
+      border-radius: var(--radius);
+      text-decoration: none;
     }
 
-    /* Panel */
-    .panel {
+    .nav-links a:hover,
+    .nav-links a:focus-visible {
+      color: var(--text);
       background: var(--surface);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-md);
-      padding: clamp(24px, 4vw, 44px);
+      outline: none;
     }
-    .calc-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.4fr;
-      gap: 28px;
-      align-items: stretch;
-    }
-    @media (max-width: 760px) { .calc-grid { grid-template-columns: 1fr; } }
 
-    .field-label {
-      font-size: 12px; font-weight: 600; color: var(--text-3);
-      letter-spacing: 0.06em; text-transform: uppercase;
-      margin-bottom: 10px;
+    .hero {
+      padding: clamp(48px, 8vw, 82px) 0 28px;
     }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.1fr);
+      gap: clamp(26px, 5vw, 56px);
+      align-items: center;
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    h1, h2, h3, p {
+      margin-top: 0;
+    }
+
+    h1 {
+      margin-bottom: 18px;
+      max-width: 720px;
+      font-size: clamp(34px, 5.5vw, 62px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      margin-bottom: 0;
+      max-width: 640px;
+      color: var(--muted);
+      font-size: clamp(17px, 2vw, 20px);
+    }
+
+    .mini-note {
+      margin-top: 22px;
+      color: var(--soft);
+      font-size: 14px;
+    }
+
+    .calculator {
+      background: var(--surface);
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: clamp(22px, 4vw, 34px);
+    }
+
+    .control-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+      gap: 18px;
+    }
+
     .field {
-      background: var(--surface-2);
-      border-radius: var(--radius-md);
-      padding: 22px 22px 20px;
-      border: 1px solid transparent;
-      transition: border-color .2s ease, background .2s ease;
-      height: 100%;
+      min-width: 0;
     }
-    .field:focus-within {
+
+    .field label,
+    .range-head span:first-child {
+      display: block;
+      margin-bottom: 9px;
+      color: var(--soft);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .field input[type="time"] {
+      width: 100%;
+      min-height: 56px;
+      padding: 0 14px;
+      color: var(--text);
+      background: var(--surface-2);
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      font-size: clamp(26px, 4vw, 36px);
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      outline: none;
+    }
+
+    .field input[type="time"]:focus {
       border-color: var(--accent);
       background: var(--surface);
       box-shadow: 0 0 0 4px var(--accent-soft);
     }
-    .field input[type="time"] {
-      width: 100%; border: none; background: transparent;
-      font: inherit; color: var(--text);
-      font-size: clamp(28px, 4vw, 40px);
-      font-weight: 700; letter-spacing: -0.03em;
-      outline: none;
-      font-feature-settings: 'tnum';
-    }
-    .field input[type="time"]::-webkit-calendar-picker-indicator { opacity: 0.35; cursor: pointer; }
 
-    .duration-display {
-      font-size: clamp(28px, 4vw, 40px);
-      font-weight: 700; letter-spacing: -0.03em;
-      font-feature-settings: 'tnum';
-      margin-bottom: 14px;
+    .range-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
     }
 
-    .slider-wrap { padding: 0 2px; }
+    output {
+      color: var(--text);
+      font-size: clamp(22px, 3vw, 32px);
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
     input[type="range"] {
-      -webkit-appearance: none; appearance: none;
-      width: 100%; height: 4px; border-radius: 2px;
-      background: linear-gradient(to right,
-        var(--accent) 0%, var(--accent) var(--p, 60%),
-        #d2d2d7 var(--p, 60%), #d2d2d7 100%);
-      outline: none; cursor: pointer;
-    }
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none; appearance: none;
-      width: 26px; height: 26px; border-radius: 50%;
-      background: white; border: 1px solid #d8d8de;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.12), 0 0 0 .5px rgba(0,0,0,0.04);
-      cursor: grab;
-      transition: transform .15s ease;
-    }
-    input[type="range"]::-webkit-slider-thumb:active { transform: scale(1.08); cursor: grabbing; }
-    input[type="range"]::-moz-range-thumb {
-      width: 26px; height: 26px; border-radius: 50%;
-      background: white; border: 1px solid #d8d8de;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-      cursor: grab;
-    }
-    .slider-ticks {
-      display: flex; justify-content: space-between;
-      margin-top: 12px; font-size: 11.5px; color: var(--text-3);
-      font-feature-settings: 'tnum';
+      appearance: none;
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      margin: 18px 0 10px;
+      border-radius: 999px;
+      background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--fill, 60%), #d6dce6 var(--fill, 60%), #d6dce6 100%);
+      outline: none;
+      cursor: pointer;
     }
 
-    /* Summary stats */
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 26px;
+      height: 26px;
+      border: 1px solid #cad2df;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 3px 8px rgba(23, 25, 31, 0.18);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 26px;
+      height: 26px;
+      border: 1px solid #cad2df;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 3px 8px rgba(23, 25, 31, 0.18);
+    }
+
+    .ticks {
+      display: flex;
+      justify-content: space-between;
+      color: var(--soft);
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .quick-row,
+    .action-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      min-height: 42px;
+      padding: 0 15px;
+      border-radius: var(--radius);
+      background: var(--surface-2);
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      background: #e3ebf4;
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn:focus-visible {
+      outline: 3px solid rgba(37, 99, 235, 0.28);
+      outline-offset: 2px;
+    }
+
+    .btn.primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.25);
+    }
+
+    .btn.primary:hover {
+      background: #1d4ed8;
+    }
+
+    .btn.active {
+      color: var(--accent);
+      background: var(--accent-soft);
+      box-shadow: inset 0 0 0 1px rgba(37, 99, 235, 0.28);
+    }
+
+    .status {
+      min-height: 22px;
+      margin: 0;
+      color: var(--good);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
     .summary {
-      margin-top: 32px;
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 1px;
-      background: var(--line-soft);
-      border-radius: var(--radius-md);
+      margin-top: 26px;
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
       overflow: hidden;
+      background: var(--line-soft);
     }
-    .summary > div { background: var(--surface); padding: 18px 20px; }
-    .summary .k { font-size: 11px; color: var(--text-3); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
-    .summary .v { font-size: clamp(18px, 2.3vw, 24px); font-weight: 700; letter-spacing: -0.02em; font-feature-settings: 'tnum'; }
-    @media (max-width: 760px) { .summary { grid-template-columns: repeat(2, 1fr); } }
 
-    /* Hypnogram */
-    .viz-section { padding-top: clamp(36px, 5vw, 64px); }
-    .viz-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 22px; flex-wrap: wrap; gap: 16px; }
-    .viz-title { font-size: clamp(22px, 3vw, 30px); font-weight: 700; letter-spacing: -0.03em; }
-    .viz-sub { color: var(--text-3); font-size: 14px; }
+    .summary-item {
+      min-width: 0;
+      padding: 16px;
+      background: #fff;
+    }
 
-    .hypnogram-wrap { width: 100%; position: relative; overflow: visible; }
-    svg.hypnogram { width: 100%; height: auto; display: block; overflow: visible; }
+    .summary-item span {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--soft);
+      font-size: 12px;
+      font-weight: 800;
+    }
 
-    .legend { display: flex; gap: 22px; margin-top: 18px; flex-wrap: wrap; font-size: 13px; color: var(--text-2); }
-    .legend .lg-item { display: inline-flex; align-items: center; gap: 8px; }
-    .legend .sw { width: 12px; height: 12px; border-radius: 3px; }
-    .sw.rem { background: var(--rem); }
-    .sw.nrem { background: var(--nrem); }
-    .sw.deep { background: var(--nrem-deep); }
-    .sw.wild { background: rgba(94,92,230,0.18); border: 1px solid var(--accent); }
-    .sw.dild { background: transparent; border: 1.5px dashed var(--rem); }
+    .summary-item strong {
+      display: block;
+      font-size: clamp(18px, 2.4vw, 24px);
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      word-break: keep-all;
+    }
+
+    .section {
+      padding: clamp(52px, 8vw, 84px) 0;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 20px;
+      margin-bottom: 22px;
+    }
+
+    .section-head h2 {
+      margin-bottom: 0;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      max-width: 500px;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      background: var(--surface);
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      box-shadow: 0 8px 24px rgba(23, 25, 31, 0.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    caption {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+    }
+
+    th, td {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line-soft);
+      text-align: left;
+      vertical-align: top;
+      font-size: 15px;
+    }
+
+    thead th {
+      color: var(--soft);
+      background: #fbfcfe;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    tbody tr:last-child th,
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    tbody tr.focus {
+      background: linear-gradient(90deg, var(--rem-soft), #ffffff 56%);
+    }
+
+    tbody th,
+    .time-cell,
+    .rem-cell {
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .rem-cell strong {
+      color: var(--rem);
+    }
+
+    .table-hint {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--line-soft);
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .chart-panel {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
+      padding: clamp(16px, 3vw, 26px);
+      box-shadow: 0 8px 24px rgba(23, 25, 31, 0.05);
+    }
+
+    .chart-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: baseline;
+      margin-bottom: 16px;
+    }
+
+    .chart-title h3 {
+      margin-bottom: 0;
+      font-size: 20px;
+    }
+
+    .chart-title p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    svg {
+      width: 100%;
+      min-height: 260px;
+      display: block;
+      overflow: visible;
+    }
 
     .tooltip {
-      position: absolute; pointer-events: none;
-      background: var(--text); color: white;
-      font-size: 12px; padding: 8px 12px; border-radius: 8px;
-      transform: translate(-50%, -120%);
-      opacity: 0; transition: opacity .15s ease;
-      white-space: nowrap; z-index: 10;
-      font-feature-settings: 'tnum'; font-weight: 500;
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 5;
+      transform: translate(-50%, -112%);
+      padding: 8px 10px;
+      border-radius: var(--radius);
+      background: var(--text);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.16s ease;
     }
-    .tooltip.on { opacity: 1; }
 
-    /* Section heads */
-    .sec-head { text-align: center; margin-bottom: 44px; }
-    .sec-head .eyebrow { color: var(--text-3); }
-    .sec-head h2 {
-      font-size: clamp(30px, 4.5vw, 48px); font-weight: 700;
-      letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 14px;
+    .tooltip.on {
+      opacity: 1;
     }
-    .sec-head p { color: var(--text-2); font-size: 17px; max-width: 640px; margin: 0 auto; }
 
-    /* Technique grid */
-    .tech-grid {
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .legend span {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      display: inline-block;
+    }
+
+    .swatch.rem { background: var(--rem); }
+    .swatch.light { background: var(--light); }
+    .swatch.deep { background: var(--deep); }
+    .swatch.window { background: var(--good-soft); border: 1px solid var(--good); }
+
+    .tech-grid,
+    .guide-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 16px;
     }
-    @media (max-width: 960px) { .tech-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (max-width: 600px) { .tech-grid { grid-template-columns: 1fr; } }
 
-    .tech-card {
+    .info-card,
+    .guide-card {
       background: var(--surface);
-      border-radius: var(--radius-md);
-      padding: 26px 26px 24px;
       border: 1px solid var(--line-soft);
-      display: flex; flex-direction: column; gap: 10px;
-      transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
-      min-height: 220px;
+      border-radius: var(--radius);
+      padding: 22px;
     }
-    .tech-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--line); }
-    .tech-card.disabled {
-      opacity: 0.55;
-      background: var(--surface-2);
-    }
-    .tech-card.disabled:hover { transform: none; box-shadow: none; }
 
-    .tech-row {
-      display: flex; justify-content: space-between; align-items: center;
-      gap: 8px; flex-wrap: wrap;
+    .info-card header,
+    .guide-card header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
     }
-    .tech-name {
-      font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
-      color: var(--text-3);
+
+    .code {
+      color: var(--soft);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
     }
+
     .grade {
-      font-size: 10px; font-weight: 700; letter-spacing: 0.04em;
-      padding: 3px 8px; border-radius: 999px;
-      background: var(--surface-2); color: var(--text-2);
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
     }
-    .grade.A { background: var(--good-soft); color: #1f8b3a; }
-    .grade.B { background: var(--accent-soft); color: var(--accent); }
-    .grade.C { background: var(--warn-soft); color: #b06d00; }
-    .grade.D { background: var(--rem-soft); color: var(--rem); }
+
+    .grade.a { color: var(--good); background: var(--good-soft); }
+    .grade.b { color: var(--accent); background: var(--accent-soft); }
+    .grade.c { color: #8a5a00; background: var(--warn-soft); }
 
     .tech-time {
-      font-size: clamp(24px, 3.2vw, 32px);
-      font-weight: 700; letter-spacing: -0.03em;
-      font-feature-settings: 'tnum';
-      margin-top: 4px;
-      line-height: 1.2;
+      margin-bottom: 8px;
+      color: var(--text);
+      font-size: 23px;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.25;
     }
+
     .tech-time small {
-      display: block; font-size: 12.5px; font-weight: 500;
-      color: var(--text-3); letter-spacing: 0; margin-top: 4px;
-    }
-    .tech-title {
-      font-size: 15px; font-weight: 600;
-      color: var(--text); letter-spacing: -0.01em;
-      margin-top: 2px;
-    }
-    .tech-desc {
-      font-size: 13.5px; line-height: 1.65; color: var(--text-2);
-      flex: 1;
+      display: block;
+      margin-top: 4px;
+      color: var(--soft);
+      font-size: 13px;
+      font-weight: 700;
     }
 
-    /* Knowledge */
-    .know-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 18px;
-    }
-    @media (max-width: 800px) { .know-grid { grid-template-columns: 1fr; } }
-
-    .know-card {
-      background: var(--surface);
-      border-radius: var(--radius-md);
-      padding: 32px;
-      border: 1px solid var(--line-soft);
-    }
-    .know-card h3 {
-      font-size: 21px; font-weight: 700; letter-spacing: -0.02em;
-      margin-bottom: 12px;
-    }
-    .know-card p { color: var(--text-2); font-size: 14.5px; line-height: 1.7; }
-    .know-card p + p { margin-top: 8px; }
-    .know-card .num {
-      font-size: 12px; font-weight: 700; color: var(--accent);
-      letter-spacing: 0.06em; margin-bottom: 8px;
-    }
-    .know-card strong { color: var(--text); font-weight: 600; }
-
-    /* FAQ */
-    .faq-list { max-width: 760px; margin: 0 auto; }
-    details {
-      border-bottom: 1px solid var(--line-soft);
-      padding: 22px 4px;
-    }
-    details summary {
-      font-size: 17px; font-weight: 600; cursor: pointer;
-      list-style: none; display: flex; justify-content: space-between; align-items: center;
-      letter-spacing: -0.01em;
-    }
-    details summary::-webkit-details-marker { display: none; }
-    details summary::after {
-      content: '+'; font-size: 22px; color: var(--text-3); font-weight: 300;
-      transition: transform .2s ease;
-    }
-    details[open] summary::after { content: '−'; }
-    details p {
-      color: var(--text-2); font-size: 15px; line-height: 1.7;
-      margin-top: 12px;
+    .info-card h3,
+    .guide-card h3 {
+      margin-bottom: 8px;
+      font-size: 18px;
     }
 
-    /* Safety strip */
+    .info-card p,
+    .guide-card p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .info-card.disabled {
+      opacity: 0.58;
+      background: #f8fafc;
+    }
+
+    .guide-num {
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
     .safety {
-      background: var(--surface-2);
-      border-radius: var(--radius-md);
-      padding: 24px 28px;
-      margin: 30px 0 0;
-      display: flex; gap: 16px;
-      align-items: flex-start;
+      margin-top: 18px;
+      padding: 18px 20px;
+      border: 1px solid #f1d391;
+      border-radius: var(--radius);
+      background: var(--warn-soft);
+      color: #634609;
+      font-size: 14px;
+    }
+
+    .faq-list {
+      max-width: 820px;
+      margin: 0 auto;
+      background: var(--surface);
       border: 1px solid var(--line-soft);
+      border-radius: var(--radius);
     }
-    .safety .ico {
-      flex-shrink: 0; width: 32px; height: 32px;
-      background: var(--accent-soft); color: var(--accent);
-      border-radius: 50%; display: grid; place-items: center;
-      font-weight: 700; font-size: 14px;
+
+    details {
+      padding: 0 20px;
+      border-bottom: 1px solid var(--line-soft);
     }
-    .safety .txt { font-size: 14px; color: var(--text-2); line-height: 1.65; }
-    .safety .txt strong { color: var(--text); font-weight: 700; }
+
+    details:last-child {
+      border-bottom: 0;
+    }
+
+    summary {
+      min-height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      cursor: pointer;
+      font-weight: 900;
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none;
+    }
+
+    summary::after {
+      content: "+";
+      color: var(--soft);
+      font-size: 24px;
+      font-weight: 400;
+    }
+
+    details[open] summary::after {
+      content: "-";
+    }
+
+    details p {
+      margin: -2px 0 18px;
+      color: var(--muted);
+      font-size: 15px;
+    }
 
     footer {
-      padding: 40px 24px 60px;
-      text-align: center;
-      color: var(--text-3);
-      font-size: 13px;
+      padding: 38px 0 54px;
       border-top: 1px solid var(--line-soft);
-      margin-top: 40px;
+      color: var(--soft);
+      text-align: center;
+      font-size: 13px;
     }
-    footer .small { margin-top: 8px; font-size: 12px; opacity: 0.85; max-width: 580px; margin-left: auto; margin-right: auto; line-height: 1.6; }
 
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-    .hero > * { animation: fadeUp .8s ease both; }
-    .hero h1 { animation-delay: .05s; }
-    .hero .lead { animation-delay: .15s; }
-    .hero .principle { animation-delay: .3s; }
+    @media (max-width: 900px) {
+      .hero-grid,
+      .control-grid,
+      .section-head {
+        grid-template-columns: 1fr;
+      }
+
+      .section-head {
+        display: block;
+      }
+
+      .section-head p {
+        margin-top: 8px;
+      }
+
+      .summary,
+      .tech-grid,
+      .guide-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .wrap {
+        width: min(100% - 28px, var(--max));
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding-top: 34px;
+      }
+
+      .calculator {
+        padding: 18px;
+      }
+
+      .summary,
+      .tech-grid,
+      .guide-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-item {
+        padding: 14px;
+      }
+
+      .quick-row .btn,
+      .action-row .btn {
+        flex: 1 1 calc(50% - 10px);
+      }
+
+      .status {
+        flex-basis: 100%;
+      }
+
+      .chart-title {
+        display: block;
+      }
+
+      svg {
+        min-height: 300px;
+      }
+    }
   </style>
 </head>
 <body>
-
   <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand"><span class="brand-dot"></span> Dream Cycle</div>
-      <nav class="nav-links">
-        <a href="file:///C:/Users/fntle/Downloads/dream_cycle.html#calc">계산기</a>
-        <a href="file:///C:/Users/fntle/Downloads/dream_cycle.html#timing">유도법별 시점</a>
-        <a href="file:///C:/Users/fntle/Downloads/dream_cycle.html#guide">가이드</a>
-        <a href="file:///C:/Users/fntle/Downloads/dream_cycle.html#faq">FAQ</a>
+    <div class="wrap topbar-inner">
+      <div class="brand" aria-label="Dream Cycle"><span class="brand-mark" aria-hidden="true"></span>Dream Cycle</div>
+      <nav class="nav-links" aria-label="주요 메뉴">
+        <a href="#calc">계산기</a>
+        <a href="#timing">주기표</a>
+        <a href="#guide">가이드</a>
+        <a href="#faq">FAQ</a>
       </nav>
     </div>
   </header>
 
-  <section class="hero wrap">
-    <p class="eyebrow">For Lucid Dreamers</p>
-    <h1>꿈을 <span class="gradient">설계하다</span></h1>
-    <p class="lead">
-      취침 시간과 수면 시간을 입력하면 렘 수면 주기를 그려드립니다.<br>
-      MILD · WBTB · WILD · SSILD · DEILD · DILD · 모닝냅 — 일곱 갈래의 길이 한 화면에서 펼쳐집니다.
-    </p>
-    <span class="principle">수면이 먼저, 루시드드림은 그 다음</span>
-  </section>
-
-  <section id="calc" class="wrap" style="padding-top: 0;">
-    <div class="panel">
-      <div class="calc-grid">
+  <main>
+    <section class="hero" id="calc">
+      <div class="wrap hero-grid">
         <div>
-          <div class="field-label">취침 시간</div>
-          <div class="field">
-            <input type="time" id="bedtime" value="23:00">
-          </div>
+          <p class="eyebrow">Lucid Dream Timing</p>
+          <h1>렘수면 시간을 먼저 보고 루시드 드림 루틴을 정하세요</h1>
+          <p class="lead">취침 시간과 목표 수면 시간을 넣으면 기상 시간, 렘수면 예상 구간, WBTB와 DILD를 시도하기 좋은 시간을 한 번에 정리합니다.</p>
+          <p class="mini-note">완벽한 정답표가 아니라 내 수면 패턴을 찾기 위한 기준표로 사용하세요.</p>
         </div>
-        <div>
-          <div class="field-label">수면 시간</div>
-          <div class="field">
-            <div class="duration-display" id="dur-display">7시간 30분</div>
-            <div class="slider-wrap">
-              <input type="range" id="duration" min="30" max="720" step="30" value="450" style="--p: 60.86956521739131%;">
-              <div class="slider-ticks">
-                <span>30분</span>
+
+        <form class="calculator" aria-label="렘수면 주기 계산기" novalidate>
+          <div class="control-grid">
+            <div class="field">
+              <label for="bedtime">취침 시간</label>
+              <input type="time" id="bedtime" value="23:00" step="300">
+            </div>
+            <div class="field">
+              <div class="range-head">
+                <span id="duration-label">수면 시간</span>
+                <output id="duration-output" for="duration">7시간 30분</output>
+              </div>
+              <input type="range" id="duration" min="180" max="720" step="30" value="450" aria-labelledby="duration-label">
+              <div class="ticks" aria-hidden="true">
                 <span>3시간</span>
                 <span>6시간</span>
                 <span>9시간</span>
@@ -423,656 +808,859 @@
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <div class="summary">
-        <div>
-          <div class="k">기상 시간</div>
-          <div class="v" id="wake-time">06:30</div>
-        </div>
-        <div>
-          <div class="k">완성 주기</div>
-          <div class="v" id="cycle-count">5 주기</div>
-        </div>
-        <div>
-          <div class="k">총 렘</div>
-          <div class="v" id="total-rem">2시간 40분</div>
-        </div>
-        <div>
-          <div class="k">렘 비중</div>
-          <div class="v" id="rem-ratio">36%</div>
-        </div>
-      </div>
-    </div>
-  </section>
+          <div class="quick-row" aria-label="빠른 수면 시간 선택">
+            <button type="button" class="btn" data-duration="360">6시간</button>
+            <button type="button" class="btn active" data-duration="450">7시간 30분</button>
+            <button type="button" class="btn" data-duration="480">8시간</button>
+            <button type="button" class="btn" data-duration="540">9시간</button>
+          </div>
 
-  <section class="wrap viz-section">
-    <div class="panel">
-      <div class="viz-header">
-        <div>
-          <div class="viz-title">렘 수면 주기 시각화</div>
-          <div class="viz-sub">밤이 깊을수록 렘은 길어집니다 — 자각몽이 만들어지는 자리.</div>
-        </div>
-      </div>
-      <div class="hypnogram-wrap">
-        <svg class="hypnogram" viewBox="0 0 1000 340" preserveAspectRatio="none" id="hypnogram"><line x1="50" x2="976" y1="46" y2="46" stroke="#eaeaef" stroke-width="1"></line>
-<text x="40" y="50" text-anchor="end" font-size="11" fill="#86868b" font-family="Pretendard, sans-serif">각성</text>
-<line x1="50" x2="976" y1="80" y2="80" stroke="#eaeaef" stroke-width="1"></line>
-<text x="40" y="84" text-anchor="end" font-size="11" fill="#86868b" font-family="Pretendard, sans-serif">렘</text>
-<line x1="50" x2="976" y1="170.20000000000002" y2="170.20000000000002" stroke="#eaeaef" stroke-width="1"></line>
-<text x="40" y="174.20000000000002" text-anchor="end" font-size="11" fill="#86868b" font-family="Pretendard, sans-serif">얕은</text>
-<line x1="50" x2="976" y1="276" y2="276" stroke="#eaeaef" stroke-width="1"></line>
-<text x="40" y="280" text-anchor="end" font-size="11" fill="#86868b" font-family="Pretendard, sans-serif">깊은</text>
-<rect x="605.6" y="36" width="185.20000000000005" height="244" fill="#5e5ce6" opacity="0.07"></rect>
-<text x="698.2" y="30" text-anchor="middle" font-size="10.5" fill="#5e5ce6" font-family="Pretendard, sans-serif" font-weight="700" letter-spacing="0.5">WBTB · WILD</text>
-<rect x="214.62222222222223" y="77" width="20.577777777777783" height="6" fill="#bf5af2" rx="3" data-tip="1번째 렘 · 00:20–00:30 (10분)" style="cursor: pointer;"></rect>
-<rect x="379.24444444444447" y="77" width="41.155555555555566" height="6" fill="#bf5af2" rx="3" data-tip="2번째 렘 · 01:40–02:00 (20분)" style="cursor: pointer;"></rect>
-<rect x="543.8666666666667" y="77" width="61.73333333333335" height="6" fill="#bf5af2" rx="3" data-tip="3번째 렘 · 03:00–03:30 (30분)" style="cursor: pointer;"></rect>
-<rect x="698.1999999999999" y="77" width="92.60000000000014" height="6" fill="#bf5af2" rx="3" data-tip="4번째 렘 · 04:15–05:00 (45분)" style="cursor: pointer;"></rect>
-<rect x="862.8222222222222" y="77" width="113.1777777777778" height="6" fill="#bf5af2" rx="3" data-tip="5번째 렘 · 05:35–06:30 (55분)" style="cursor: pointer;"></rect>
-<path d="M50.0 46.0 L50.0 46.0 L54.0 170.2 L74.8 170.2 L78.8 170.2 L82.8 276.0 L165.4 276.0 L169.4 276.0 L173.4 170.2 L210.6 170.2 L214.6 170.2 L218.6 80.0 L231.2 80.0 L235.2 80.0 L239.2 170.2 L264.1 170.2 L268.1 170.2 L272.1 276.0 L325.9 276.0 L329.9 276.0 L333.9 170.2 L375.2 170.2 L379.2 170.2 L383.2 80.0 L416.4 80.0 L420.4 80.0 L424.4 170.2 L449.3 170.2 L453.3 170.2 L457.3 276.0 L488.4 276.0 L492.4 276.0 L496.4 170.2 L539.9 170.2 L543.9 170.2 L547.9 80.0 L601.6 80.0 L605.6 80.0 L609.6 170.2 L630.4 170.2 L634.4 170.2 L638.4 276.0 L648.9 276.0 L652.9 276.0 L656.9 170.2 L694.2 170.2 L698.2 170.2 L702.2 80.0 L786.8 80.0 L790.8 80.0 L794.8 170.2 L813.6 170.2 L817.6 170.2 L821.6 276.0 L817.7 276.0 L821.7 276.0 L825.7 170.2 L858.8 170.2 L862.8 170.2 L866.8 80.0 L972.0 80.0 L976.0 80.0 L976.0 46.0" fill="none" stroke="#1d1d1f" stroke-width="1.6" stroke-linejoin="round"></path>
-<text x="142.60000000000002" y="302" text-anchor="middle" font-size="11" fill="#86868b" font-family="Pretendard, sans-serif">1주기</text>
-<line x1="235.20000000000002" x2="235.20000000000002" y1="36" y2="280" stroke="#eaeaef" stroke-dasharray="2 4"></line>
-<text x="327.8" y="302" text-anchor="middle" font-size="11" fill="#86868b" font-family="Pretendard, sans-serif">2주기</text>
-<line x1="420.40000000000003" x2="420.40000000000003" y1="36" y2="280" stroke="#eaeaef" stroke-dasharray="2 4"></line>
-<text x="513" y="302" text-anchor="middle" font-size="11" fill="#86868b" font-family="Pretendard, sans-serif">3주기</text>
-<line x1="605.6" x2="605.6" y1="36" y2="280" stroke="#eaeaef" stroke-dasharray="2 4"></line>
-<text x="698.1999999999999" y="302" text-anchor="middle" font-size="11" fill="#86868b" font-family="Pretendard, sans-serif">4주기</text>
-<line x1="790.8000000000001" x2="790.8000000000001" y1="36" y2="280" stroke="#eaeaef" stroke-dasharray="2 4"></line>
-<text x="883.4" y="302" text-anchor="middle" font-size="11" fill="#86868b" font-family="Pretendard, sans-serif">5주기</text>
-<line x1="976" x2="976" y1="36" y2="280" stroke="#1d1d1f" stroke-width="1"></line>
-<text x="50" y="320" text-anchor="start" font-size="11" fill="#1d1d1f" font-family="Pretendard, sans-serif" font-weight="600">23:00<tspan fill="#86868b" font-weight="400">  · MILD · TLR</tspan></text>
-<text x="976" y="320" text-anchor="end" font-size="11" fill="#1d1d1f" font-family="Pretendard, sans-serif" font-weight="600">06:30<tspan fill="#86868b" font-weight="400">  · 기상</tspan></text>
-<line x1="790.8000000000001" x2="790.8000000000001" y1="32" y2="284" stroke="#bf5af2" stroke-width="1.5" stroke-dasharray="4 4"></line>
-<g transform="translate(790.8000000000001, 24)">
-          <rect x="-26" y="-12" width="52" height="18" rx="9" fill="#bf5af2"></rect>
-          <text x="0" y="1" text-anchor="middle" font-size="10.5" fill="white" font-family="Pretendard, sans-serif" font-weight="700" letter-spacing="0.5">DILD</text>
-        </g>
-<polygon points="232.20000000000002,34 238.20000000000002,34 235.20000000000002,40" fill="#5e5ce6" opacity="0.5"><title>DEILD 가능 시점</title></polygon>
-<polygon points="417.40000000000003,34 423.40000000000003,34 420.40000000000003,40" fill="#5e5ce6" opacity="0.5"><title>DEILD 가능 시점</title></polygon>
-<polygon points="602.6,34 608.6,34 605.6,40" fill="#5e5ce6" opacity="0.5"><title>DEILD 가능 시점</title></polygon>
-<polygon points="787.8000000000001,34 793.8000000000001,34 790.8000000000001,40" fill="#5e5ce6" opacity="0.5"><title>DEILD 가능 시점</title></polygon>
-<polygon points="973,34 979,34 976,40" fill="#5e5ce6" opacity="0.5"><title>DEILD 가능 시점</title></polygon></svg>
-        <div class="tooltip" id="tooltip"></div>
-      </div>
-      <div class="legend">
-        <span class="lg-item"><span class="sw rem"></span>렘(REM)</span>
-        <span class="lg-item"><span class="sw nrem"></span>얕은 비렘</span>
-        <span class="lg-item"><span class="sw deep"></span>깊은 비렘</span>
-        <span class="lg-item"><span class="sw wild"></span>WBTB · WILD 핵심 구간</span>
-        <span class="lg-item"><span class="sw dild"></span>DILD 자연 기상 지점</span>
-      </div>
-    </div>
-  </section>
+          <div class="action-row">
+            <button type="button" class="btn primary" id="calculate">계산하기</button>
+            <button type="button" class="btn" id="reset">초기화</button>
+            <button type="button" class="btn" id="copy-table">표 이미지 복사</button>
+            <p class="status" id="status" role="status" aria-live="polite"></p>
+          </div>
 
-  <section id="timing" class="wrap">
-    <div class="sec-head">
-      <p class="eyebrow">Optimal Timing per Technique</p>
-      <h2>일곱 갈래의 길</h2>
-      <p>같은 밤이라도 어느 자리에서 의도를 펼치는가에 따라 꿈의 결이 달라집니다.<br>각 기법의 최적 시점을 한눈에 확인하세요.</p>
-    </div>
-    <div class="tech-grid" id="tech-grid">
-          <div class="tech-card ">
-            <div class="tech-row">
-              <span class="tech-name">MILD</span>
-              <span class="grade A">근거 A</span>
+          <div class="summary" aria-label="계산 요약">
+            <div class="summary-item">
+              <span>기상 시간</span>
+              <strong id="wake-time">06:30</strong>
             </div>
-            <div class="tech-time">23:00<small>취침 직전 의도 심기</small></div>
-            <div class="tech-title">의도 심기</div>
-            <div class="tech-desc">잠들기 전 마지막 생각이 “꿈을 알아차리겠다”는 부드러운 의도에 가깝게 흘러가도록 합니다. 최근 꿈 한 장면과 RC를 함께 상상하는 것이 핵심.</div>
-          </div>
-        
-          <div class="tech-card ">
-            <div class="tech-row">
-              <span class="tech-name">WBTB</span>
-              <span class="grade A">근거 A</span>
+            <div class="summary-item">
+              <span>완성 주기</span>
+              <strong id="cycle-count">5주기</strong>
             </div>
-            <div class="tech-time">03:30–05:00<small>4.5~6시간 후 짧은 각성</small></div>
-            <div class="tech-title">후반 렘 활용 깸</div>
-            <div class="tech-desc">5분 이내로 깬 뒤 MILD 한 문장을 다시 심거나, SSILD를 짧게 돌리고 다시 누우세요. 너무 오래 깨어 있지 않는 것이 핵심.</div>
-          </div>
-        
-          <div class="tech-card ">
-            <div class="tech-row">
-              <span class="tech-name">WILD</span>
-              <span class="grade C">근거 C</span>
+            <div class="summary-item">
+              <span>총 렘수면</span>
+              <strong id="total-rem">2시간 40분</strong>
             </div>
-            <div class="tech-time">02:55<small>3번째 렘 직전 · 의식 유지 진입</small></div>
-            <div class="tech-title">의식 유지 진입</div>
-            <div class="tech-desc">잠과 깨어남의 경계를 미끄러지듯 통과해 자각몽으로 진입합니다. 꿈일기 · RC · 자각몽 경험이 어느 정도 쌓인 뒤에 시도하기를 권합니다.</div>
-          </div>
-        
-          <div class="tech-card ">
-            <div class="tech-row">
-              <span class="tech-name">SSILD</span>
-              <span class="grade B">근거 B</span>
+            <div class="summary-item">
+              <span>집중 구간</span>
+              <strong id="best-window">03:30 - 05:00</strong>
             </div>
-            <div class="tech-time">04:00<small>WBTB 후 다시 누울 때</small></div>
-            <div class="tech-title">감각 순환 진입</div>
-            <div class="tech-desc">시각 → 청각 → 신체감각을 짧게 몇 번, 길게 몇 번 순환한 뒤 그대로 잠듭니다. 감각을 만들지 말고 지금 있는 감각을 관찰만.</div>
           </div>
-        
-          <div class="tech-card ">
-            <div class="tech-row">
-              <span class="tech-name">DEILD</span>
-              <span class="grade B">근거 B</span>
-            </div>
-            <div class="tech-time">각 렘 직후<small>예: 06:30</small></div>
-            <div class="tech-title">꿈 재진입</div>
-            <div class="tech-desc">꿈에서 깬 직후 몸을 움직이지 않고 방금 꿈의 감각을 붙잡아 다시 들어가는 재진입 기술. 깬 것 같으면 반드시 RC를 먼저.</div>
-          </div>
-        
-          <div class="tech-card ">
-            <div class="tech-row">
-              <span class="tech-name">DILD</span>
-              <span class="grade A">근거 A</span>
-            </div>
-            <div class="tech-time">05:00<small>4번째 주기 끝 · 풍성한 회상</small></div>
-            <div class="tech-title">자연 자각 · 풍성한 회상</div>
-            <div class="tech-desc">꿈일기 · RC · MILD가 쌓여 자각으로 이어지는 결과론적 접근. 후반 렘이 가장 길고 또렷한 이 무렵의 자연 기상이 회상력의 황금 구간입니다.</div>
-          </div>
-        
-          <div class="tech-card ">
-            <div class="tech-row">
-              <span class="tech-name">NAP</span>
-              <span class="grade A">근거 A</span>
-            </div>
-            <div class="tech-time">06:30<small>+60~90분 추가 수면</small></div>
-            <div class="tech-title">모닝냅 (렘 반동)</div>
-            <div class="tech-desc">평소보다 일찍 일어난 뒤 다시 누우면 몸은 곧장 렘으로 직진(렘 반동). 깨어 있던 직전 의도가 그대로 꿈으로 이어지는 황금 구간.</div>
-          </div>
-        
-          <div class="tech-card ">
-            <div class="tech-row">
-              <span class="tech-name">TLR</span>
-              <span class="grade B">근거 B</span>
-            </div>
-            <div class="tech-time">23:00<small>취침 직전 단서 연결</small></div>
-            <div class="tech-title">단서 연결 자각</div>
-            <div class="tech-desc">깨어 있을 때 특정 감각 단서와 “이건 꿈” 마인드셋을 짝지어두면, 수면 중 그 단서가 자각의 방아쇠가 될 수 있습니다. 연구 · 실험 단계 기법.</div>
-          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="section" id="timing">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>렘수면 주기표</h2>
+          <p>그래프보다 먼저 실제 시각을 표로 확인할 수 있게 정리했습니다. 분홍색으로 강조된 뒤쪽 주기는 꿈이 길고 선명해질 가능성이 높은 구간입니다.</p>
         </div>
 
-    <div class="safety">
-      <div class="ico">!</div>
-      <div class="txt">
-        <strong>안전 안내.</strong>
-        WBTB와 WILD를 매일 시도하면 수면이 무너질 수 있습니다.
-        초보자는 주 1~2회로 시작하고, 낮 피로 · 불면 · 수면마비 공포가 커지면 강도를 낮추거나 잠시 쉬어주세요.
-        WILD는 꿈일기 · RC · 자각몽 경험이 어느 정도 쌓인 뒤에 조심스럽게 시도하기를 권합니다.
-      </div>
-    </div>
-  </section>
+        <div class="table-wrap" id="cycle-table">
+          <table>
+            <caption>취침 시간 기준 렘수면 주기표</caption>
+            <thead>
+              <tr>
+                <th scope="col">주기</th>
+                <th scope="col">실제 시각</th>
+                <th scope="col">렘수면 예상 시간</th>
+                <th scope="col">활용 포인트</th>
+              </tr>
+            </thead>
+            <tbody id="cycle-body"></tbody>
+          </table>
+        </div>
 
-  <section id="guide" class="wrap">
-    <div class="sec-head">
-      <p class="eyebrow">Why It Matters</p>
-      <h2>왜 렘 주기를 알아야 하는가</h2>
-      <p>자각몽은 의지가 아니라 타이밍의 예술입니다. 같은 노력도 어디에 두느냐에 따라 결과가 달라집니다.</p>
-    </div>
-    <div class="know-grid">
-      <div class="know-card">
-        <div class="num">01 — 90분의 리듬</div>
-        <h3>밤은 한 덩어리가 아니라 다섯 개의 파동이다</h3>
-        <p>
-          평균 90분 길이의 수면 주기가 밤 동안 4~6번 반복됩니다.
-          한 주기는 얕은 비렘 → 깊은 비렘 → 다시 얕은 비렘 → 렘으로 흐르며,
-          끝자락의 렘에서 우리는 꿈을 꿉니다.
-        </p>
+        <div class="table-hint" aria-label="표 안내">
+          <span class="pill">90분 단위 기준</span>
+          <span class="pill">개인차 있음</span>
+          <span class="pill">기록하면서 조정</span>
+        </div>
       </div>
-      <div class="know-card">
-        <div class="num">02 — 점점 길어지는 꿈</div>
-        <h3>렘은 새벽으로 갈수록 풍성해진다</h3>
-        <p>
-          첫 주기의 렘은 약 10분에 불과하지만, 4~5번째에 이르면 45~60분에 달합니다.
-          반대로 깊은 비렘은 새벽으로 갈수록 줄어듭니다.
-          그래서 자각몽의 무대는 거의 언제나 후반부 — 새벽 3시 이후에 펼쳐집니다.
-        </p>
-      </div>
-      <div class="know-card">
-        <div class="num">03 — 꿈자각과 꿈제어</div>
-        <h3>루시드드림이란 꿈자각과 꿈제어이다</h3>
-        <p>
-          꿈임을 알아차리는 것이 꿈자각이고,
-          꿈속 감정 · 행동 · 환경에 부분적으로라도 영향을 주는 것이 꿈제어입니다.
-          꿈자각의 기초는 <strong>꿈일기</strong>, 꿈제어의 시작은 <strong>RC(현실성 체크)</strong>.
-          기법은 이 두 축 위에 놓이는 도구일 뿐입니다.
-        </p>
-      </div>
-      <div class="know-card">
-        <div class="num">04 — 충분히 자야 꿈이 길어진다</div>
-        <h3>회상이 안 되면 대개 4번째 주기에 못 닿은 것</h3>
-        <p>
-          꿈 회상이 잘 안 된다면 후반 렘을 충분히 확보하지 못했을 가능성이 높습니다.
-          7~8시간 수면으로 4~5번째 주기까지 닿으면 회상력과 자각 신호의 위력이 동시에 올라갑니다.
-          이른 기상 후의 90분 모닝냅은 렘 반동을 활용하는 가장 빠른 지름길입니다.
-        </p>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <section id="faq" class="wrap">
-    <div class="sec-head">
-      <p class="eyebrow">Notes</p>
-      <h2>자주 묻는 질문</h2>
-    </div>
-    <div class="faq-list">
-      <details open="">
-        <summary>주기 길이는 모든 사람에게 90분인가요?</summary>
-        <p>
-          평균값일 뿐입니다. 개인차가 있어 80~110분 사이에 분포하며, 같은 사람도 컨디션에 따라 흔들립니다.
-          본 도구는 90분 표준 모델로 큰 그림을 그립니다 — 며칠 자기 관찰을 곁들여 자신의 실제 주기에
-          ±10분 보정해 사용하시면 정확도가 크게 올라갑니다.
-        </p>
-      </details>
-      <details>
-        <summary>입면(잠드는 데 걸리는 시간)은 반영되나요?</summary>
-        <p>
-          본 계산은 입력한 취침 시간을 ‘잠든 시점’으로 가정합니다.
-          평소 입면이 15~20분 이상 걸린다면 취침 시간을 그만큼 앞당겨 입력해주세요.
-        </p>
-      </details>
-      <details>
-        <summary>‘3번째 렘 직전’이 와일드의 절대 정답인가요?</summary>
-        <p>
-          정답이라기보다 가장 보편적으로 작동하는 구간입니다.
-          어떤 사람에게는 2번째 렘 직후, 또 어떤 사람에게는 4번째 주기가 더 잘 맞기도 합니다.
-          제시된 시점은 ‘처음 시도해보기 좋은 자리’로 생각하시고, 자기 관찰로 자기만의 자리를 찾아가시길 권합니다.
-        </p>
-      </details>
-      <details>
-        <summary>각 기법의 근거 등급(A · B · C · D)은 무엇인가요?</summary>
-        <p>
-          A급은 연구 기반이 비교적 강한 내용(꿈일기, MILD, 수면 주기 이해, WBTB),
-          B급은 연구와 경험이 함께 있으나 개인차가 큰 내용(SSILD, DEILD, TLR),
-          C급은 경험적으로 유용하지만 검증이 제한적인 내용(꿈 안정화, 화질 개선, 회전 테크닉),
-          D급은 저자 모델 · 숙련자 경험에 가까운 내용입니다.
-          무엇을 시도하든 자신의 경험으로 다시 검증하는 것이 가장 정확합니다.
-        </p>
-      </details>
-      <details>
-        <summary>WBTB는 매일 해도 되나요?</summary>
-        <p>
-          매일 WBTB를 하면 수면이 무너질 수 있습니다. 처음에는 주 1~2회로 제한하고,
-          낮 피로가 쌓이거나 새벽에 깬 뒤 다시 잠들기 어려워지면 중단해주세요.
-          WBTB의 목적은 잠을 깨우는 것이 아니라, 꿈자각 가능성이 높은 시간대에 의도를 다시 심는 것입니다.
-        </p>
-      </details>
-      <details>
-        <summary>모닝냅은 몇 분이 적당한가요?</summary>
-        <p>
-          60~90분이 가장 일반적입니다. 너무 짧으면 렘 진입 전에 깨고,
-          너무 길면 두 번째 깊은 수면으로 넘어가 오히려 둔해집니다.
-          평소 입면 시간을 더해 90분 알람을 맞추시면 무난합니다.
-        </p>
-      </details>
-    </div>
-  </section>
+    <section class="section" aria-labelledby="chart-title">
+      <div class="wrap">
+        <div class="chart-panel">
+          <div class="chart-title">
+            <h3 id="chart-title">수면 흐름 그래프</h3>
+            <p>렘수면 막대에 마우스를 올리거나 터치하면 시간을 확인할 수 있습니다.</p>
+          </div>
+          <svg id="hypnogram" viewBox="0 0 960 320" role="img" aria-label="수면 단계와 렘수면 예상 구간 그래프"></svg>
+          <div class="tooltip" id="tooltip" role="tooltip"></div>
+          <div class="legend" aria-label="그래프 범례">
+            <span><i class="swatch rem"></i>렘수면</span>
+            <span><i class="swatch light"></i>얕은 수면</span>
+            <span><i class="swatch deep"></i>깊은 수면</span>
+            <span><i class="swatch window"></i>WBTB 추천 구간</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="tech-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="tech-title">기법별 알람 시점</h2>
+          <p>큰 시간은 실제로 알람을 맞출 시각입니다. 알람이 울리면 무엇을 하고 다시 잠들면 되는지 바로 알 수 있게 정리했습니다.</p>
+        </div>
+        <div class="tech-grid" id="tech-grid"></div>
+      </div>
+    </section>
+
+    <section class="section" id="guide">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>루시드 드림 가이드</h2>
+          <p>어렵게 외우기보다 매일 반복하기 쉬운 순서로 정리했습니다.</p>
+        </div>
+
+        <div class="guide-grid">
+          <article class="guide-card">
+            <header>
+              <span class="guide-num">01</span>
+            </header>
+            <h3>잠을 먼저 안정시키기</h3>
+            <p>루시드 드림은 잠을 줄이는 기술이 아닙니다. 일정한 취침 시간, 어두운 방, 과한 카페인 줄이기가 먼저입니다. 잠이 흔들리면 꿈도 잘 기억나지 않습니다.</p>
+          </article>
+
+          <article class="guide-card">
+            <header>
+              <span class="guide-num">02</span>
+            </header>
+            <h3>꿈 기록은 짧게</h3>
+            <p>일어나자마자 장면, 장소, 감정, 이상했던 점만 적어도 충분합니다. 길게 쓰려다 포기하는 것보다 3줄을 계속 남기는 편이 더 좋습니다.</p>
+          </article>
+
+          <article class="guide-card">
+            <header>
+              <span class="guide-num">03</span>
+            </header>
+            <h3>MILD는 자기 전 1분</h3>
+            <p>"꿈을 꾸면 알아차리겠다"는 문장을 가볍게 반복하고 최근 꿈 장면을 떠올립니다. 억지로 집중하기보다 잠에 자연스럽게 이어지는 정도가 좋습니다.</p>
+          </article>
+
+          <article class="guide-card">
+            <header>
+              <span class="guide-num">04</span>
+            </header>
+            <h3>WBTB는 주 1~2회만</h3>
+            <p>잠든 뒤 4시간 30분에서 6시간 사이에 잠깐 깨는 방법입니다. 5분 안팎으로만 깨어 있고, 너무 말똥해지면 그날은 쉬는 편이 낫습니다.</p>
+          </article>
+
+          <article class="guide-card">
+            <header>
+              <span class="guide-num">05</span>
+            </header>
+            <h3>WILD는 천천히</h3>
+            <p>의식을 유지한 채 꿈으로 들어가려는 방법이라 초보자에게는 어렵습니다. 몸의 감각이 변해도 놀라지 않고, 실패해도 다시 잠드는 것을 목표로 두세요.</p>
+          </article>
+
+          <article class="guide-card">
+            <header>
+              <span class="guide-num">06</span>
+            </header>
+            <h3>DILD와 DEILD는 기록이 핵심</h3>
+            <p>DILD는 꿈속에서 이상함을 알아차리는 방식이고, DEILD는 꿈에서 깬 직후 다시 이어 들어가는 방식입니다. 둘 다 꿈 회상력이 좋아질수록 성공률이 올라갑니다.</p>
+          </article>
+        </div>
+
+        <div class="safety">
+          수면이 부족한 날, 불면이 있는 시기, 수면마비가 무섭게 느껴지는 시기에는 시도를 줄이세요. 불안이나 피로가 이어지면 루시드 드림 훈련보다 회복 수면을 우선하는 것이 안전합니다.
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>FAQ</h2>
+          <p>처음 시도할 때 자주 막히는 부분만 간단히 모았습니다.</p>
+        </div>
+
+        <div class="faq-list">
+          <details>
+            <summary>표에 나온 시간이 정확한가요?</summary>
+            <p>90분 수면 주기를 기준으로 한 예상값입니다. 실제 렘수면은 피로도, 나이, 술, 카페인, 스트레스에 따라 달라집니다. 며칠 기록한 뒤 15~30분씩 조정해보세요.</p>
+          </details>
+          <details>
+            <summary>가장 먼저 해볼 방법은 무엇인가요?</summary>
+            <p>꿈 기록과 MILD부터 추천합니다. 잠을 크게 방해하지 않고, 다른 기법의 기초가 됩니다. WBTB는 익숙해진 뒤 주 1~2회 정도로 시작하세요.</p>
+          </details>
+          <details>
+            <summary>WBTB를 매일 해도 되나요?</summary>
+            <p>매일 하면 수면이 깨질 수 있습니다. 다음 날 피곤하거나 다시 잠들기 어렵다면 횟수를 줄이세요. 루시드 드림보다 안정적인 수면이 먼저입니다.</p>
+          </details>
+          <details>
+            <summary>꿈에서 깬 직후에는 무엇을 하나요?</summary>
+            <p>바로 움직이지 말고 방금 꿈의 장면을 붙잡아보세요. 다시 잠들 수 있을 것 같으면 DEILD를 시도하고, 완전히 깼다면 짧게 기록한 뒤 현실 확인을 합니다.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
 
   <footer>
-    <div>Dream Cycle — 루시드 드리머를 위한 도구</div>
-    <div class="small">
-      본 계산은 평균 90분 주기 모델에 기반한 가이드입니다. 임상 진단을 대체하지 않으며,
-      불면 · 수면마비 공포 · 꿈과 현실 구분에 대한 불안이 지속되면 훈련을 잠시 멈추시고 전문가의 도움을 받으시기를 권합니다.
+    <div class="wrap">
+      Dream Cycle - 렘수면 주기 기반 루시드 드림 계산기
     </div>
   </footer>
 
   <script>
-    const CYCLE_MIN = 90;
-    const REM_BY_CYCLE = [10, 20, 30, 45, 55, 50, 45, 40];
+    (() => {
+      "use strict";
 
-    function pad(n) { return n.toString().padStart(2, '0'); }
-    function minToHHMM(totalMin) {
-      const t = ((totalMin % 1440) + 1440) % 1440;
-      return `${pad(Math.floor(t/60))}:${pad(Math.floor(t%60))}`;
-    }
-    function bedtimeToMin(s) {
-      const [h, m] = s.split(':').map(Number);
-      return h*60 + m;
-    }
-    function fmtDur(min) {
-      if (min <= 0) return '—';
-      const h = Math.floor(min/60), m = Math.round(min%60);
-      if (h === 0) return `${m}분`;
-      if (m === 0) return `${h}시간`;
-      return `${h}시간 ${m}분`;
-    }
-
-    function buildCycles(totalMin) {
-      const cycles = [];
-      let t = 0, i = 0;
-      while (t + CYCLE_MIN <= totalMin) {
-        const remLen = REM_BY_CYCLE[i] ?? 50;
-        const nremLen = CYCLE_MIN - remLen;
-        const deepWeight = Math.max(0, 0.55 - i * 0.12);
-        const lightLen = Math.round(nremLen * (1 - deepWeight));
-        const deepLen = nremLen - lightLen;
-        const lightALen = Math.round(lightLen * 0.4);
-        cycles.push({
-          index: i, start: t, end: t + CYCLE_MIN, partial: false,
-          segments: [
-            { stage: 'light', start: t,                          end: t + lightALen },
-            { stage: 'deep',  start: t + lightALen,              end: t + lightALen + deepLen },
-            { stage: 'light', start: t + lightALen + deepLen,    end: t + nremLen },
-            { stage: 'rem',   start: t + nremLen,                end: t + CYCLE_MIN }
-          ]
-        });
-        t += CYCLE_MIN;
-        i += 1;
-      }
-      if (t < totalMin) {
-        const nremLen = CYCLE_MIN - (REM_BY_CYCLE[i] ?? 50);
-        const segs = [];
-        let cursor = t;
-        const lightA = Math.min(totalMin - cursor, Math.round(nremLen*0.25));
-        if (lightA > 0) { segs.push({stage:'light', start:cursor, end:cursor+lightA}); cursor += lightA; }
-        const deepLen = Math.min(totalMin - cursor, Math.round(nremLen*0.45));
-        if (deepLen > 0) { segs.push({stage:'deep', start:cursor, end:cursor+deepLen}); cursor += deepLen; }
-        const lightB = Math.min(totalMin - cursor, nremLen - lightA - deepLen);
-        if (lightB > 0) { segs.push({stage:'light', start:cursor, end:cursor+lightB}); cursor += lightB; }
-        if (cursor < totalMin) segs.push({stage:'rem', start:cursor, end:totalMin});
-        cycles.push({ index: i, start: t, end: totalMin, partial: true, segments: segs });
-      }
-      return cycles;
-    }
-
-    // ---------- Technique catalog ----------
-    function techMILD(bedMin, dur) {
-      return {
-        time: minToHHMM(bedMin),
-        sub: '취침 직전 의도 심기',
-        applicable: dur >= 30,
-        reason: '잠들기 전 마지막 생각이 “꿈을 알아차리겠다”는 부드러운 의도에 가깝게 흘러가도록 합니다. 최근 꿈 한 장면과 RC를 함께 상상하는 것이 핵심.'
-      };
-    }
-    function techTLR(bedMin, dur) {
-      return {
-        time: minToHHMM(bedMin),
-        sub: '취침 직전 단서 연결',
-        applicable: dur >= 30,
-        reason: '깨어 있을 때 특정 감각 단서와 “이건 꿈” 마인드셋을 짝지어두면, 수면 중 그 단서가 자각의 방아쇠가 될 수 있습니다. 연구 · 실험 단계 기법.'
-      };
-    }
-    function techWBTB(bedMin, dur) {
-      if (dur < 300) {
-        return { time: '—', sub: '권장 시간 부족', applicable: false,
-                 reason: '4.5시간 이상 본수면이 확보되지 않으면 WBTB의 후반 렘 활용 효과가 거의 없습니다. 최소 5시간 수면을 확보해주세요.' };
-      }
-      const wbtbStart = bedMin + Math.floor(4.5*60);
-      const wbtbEnd = bedMin + 6*60;
-      if (wbtbStart >= bedMin + dur) {
-        return { time: '—', sub: '수면 길이가 짧음', applicable: false,
-                 reason: '권장 구간이 기상 시각을 넘어섭니다.' };
-      }
-      return {
-        time: `${minToHHMM(wbtbStart)}–${minToHHMM(Math.min(wbtbEnd, bedMin+dur))}`,
-        sub: '4.5~6시간 후 짧은 각성',
-        applicable: true,
-        reason: '5분 이내로 깬 뒤 MILD 한 문장을 다시 심거나, SSILD를 짧게 돌리고 다시 누우세요. 너무 오래 깨어 있지 않는 것이 핵심.'
-      };
-    }
-    function techWILD(bedMin, dur, cycles) {
-      if (dur >= 300) {
-        const c3 = cycles[2];
-        if (c3) {
-          const remStart = c3.segments.find(s => s.stage === 'rem');
-          const t = remStart ? bedMin + remStart.start - 5 : bedMin + Math.floor(4.5*60);
-          return {
-            time: minToHHMM(t),
-            sub: '3번째 렘 직전 · 의식 유지 진입',
-            applicable: true,
-            reason: '잠과 깨어남의 경계를 미끄러지듯 통과해 자각몽으로 진입합니다. 꿈일기 · RC · 자각몽 경험이 어느 정도 쌓인 뒤에 시도하기를 권합니다.'
-          };
+      const CYCLE_MIN = 90;
+      const REM_BY_CYCLE = [10, 20, 30, 45, 55, 50, 45, 40];
+      const TECHNIQUES = [
+        {
+          code: "MILD",
+          title: "의도 세우기",
+          grade: "A",
+          get: (ctx) => ({
+            time: "중간 알람 없음",
+            sub: `취침 ${toClock(ctx.bedMin)} 전 1분`,
+            ok: true,
+            desc: "침대에 누워 최근 꿈 장면을 떠올립니다. '꿈이면 알아차린다'를 짧게 반복하고, 그 장면 속에서 현실 확인을 하는 모습을 상상한 뒤 바로 잠듭니다."
+          })
+        },
+        {
+          code: "WBTB",
+          title: "잠깐 깨기",
+          grade: "A",
+          get: (ctx) => {
+            if (ctx.duration < 360) {
+              return {
+                time: "보류",
+                sub: "6시간 미만 수면",
+                ok: false,
+                desc: "오늘은 중간 알람을 맞추지 않는 편이 좋습니다. 수면 시간이 짧을 때 억지로 깨면 꿈보다 피로가 커질 수 있습니다."
+              };
+            }
+            const alarmOffset = ctx.duration >= 390 ? 300 : 270;
+            return {
+              time: `알람 ${toClock(ctx.bedMin + alarmOffset)}`,
+              sub: `잠든 뒤 ${formatDuration(alarmOffset)}`,
+              ok: true,
+              desc: "일어나면 밝은 불은 피하고 5~10분만 깨어 있습니다. 꿈 키워드 2~3개를 적고, '다음 꿈에서 알아차린다'를 한 번 정한 뒤 다시 눕습니다."
+            };
+          }
+        },
+        {
+          code: "WILD",
+          title: "의식 유지 진입",
+          grade: "C",
+          get: (ctx) => {
+            const target = ctx.cycles[2]?.segments.find((s) => s.stage === "rem");
+            if (!target || ctx.duration < 270) {
+              return {
+                time: "보류",
+                sub: "렘수면 구간 부족",
+                ok: false,
+                desc: "WILD는 중간에 깬 뒤 다시 렘수면으로 들어갈 때 시도하기 쉽습니다. 오늘 수면 길이에서는 MILD나 꿈 기록을 우선하세요."
+              };
+            }
+            const alarm = Math.max(0, target.start - 10);
+            return {
+              time: `알람 ${toClock(ctx.bedMin + alarm)}`,
+              sub: "3번째 렘수면 5~10분 전",
+              ok: true,
+              desc: "일어나면 바로 자세를 편하게 잡고 다시 누워 있습니다. 숨, 몸의 무게, 눈앞 이미지처럼 자연스럽게 생기는 감각만 지켜보다가 꿈 장면이 열리면 따라 들어갑니다."
+            };
+          }
+        },
+        {
+          code: "SSILD",
+          title: "감각 순환",
+          grade: "B",
+          get: (ctx) => ({
+            time: ctx.duration >= 360 ? `알람 ${toClock(ctx.bedMin + 300)}` : "중간 알람 없음",
+            sub: ctx.duration >= 360 ? "WBTB 후 다시 누울 때" : `취침 ${toClock(ctx.bedMin)} 전`,
+            ok: true,
+            desc: "일어나면 1~3분만 정신을 차리고 다시 눕습니다. 눈앞 어둠 보기, 주변 소리 듣기, 몸 감각 느끼기를 짧게 반복한 뒤 분석하지 말고 잠에 맡깁니다."
+          })
+        },
+        {
+          code: "DILD",
+          title: "꿈속 알아차림",
+          grade: "A",
+          get: (ctx) => {
+            const fourth = ctx.cycles[3];
+            if (!fourth || fourth.partial) {
+              return {
+                time: "중간 알람 없음",
+                sub: "꿈이 짧은 날",
+                ok: false,
+                desc: "DILD는 깨서 하는 기법이 아니라 꿈속에서 알아차리는 기법입니다. 오늘은 자기 전 MILD와 아침 꿈 기록만 가볍게 챙기세요."
+              };
+            }
+            return {
+              time: "중간 알람 없음",
+              sub: `${toClock(ctx.bedMin + fourth.start)} 이후 꿈속에서`,
+              ok: true,
+              desc: "잠을 깨우는 알람보다 낮 동안 현실 확인이 중요합니다. 자기 전에는 자주 나오는 꿈 표식을 하나 정하고, 아침 알람에 깨면 바로 꿈 내용을 적습니다."
+            };
+          }
+        },
+        {
+          code: "DEILD",
+          title: "꿈 다시 이어가기",
+          grade: "B",
+          get: (ctx) => {
+            const remEnds = ctx.cycles.flatMap((cycle) => cycle.segments.filter((s) => s.stage === "rem").map((s) => s.end));
+            if (!remEnds.length) {
+              return {
+                time: "보류",
+                sub: "렘수면 없음",
+                ok: false,
+                desc: "DEILD는 꿈에서 막 깬 순간을 이용합니다. 렘수면이 부족한 날에는 억지로 알람을 맞추기보다 수면을 이어가세요."
+              };
+            }
+            const alarm = remEnds[remEnds.length - 1];
+            return {
+              time: `알람 ${toClock(ctx.bedMin + alarm)}`,
+              sub: "마지막 렘수면 끝 무렵",
+              ok: true,
+              desc: "알람은 짧고 약하게 맞춥니다. 눈을 뜨자마자 몸을 움직이지 말고 방금 꿈의 장면, 감정, 몸 감각을 붙잡은 채 그대로 다시 잠으로 들어갑니다."
+            };
+          }
         }
-      }
-      if (dur >= 90 && dur <= 180) {
-        return {
-          time: `${minToHHMM(bedMin)} 직후`,
-          sub: '모닝냅 진입 시점',
-          applicable: true,
-          reason: '짧은 수면 진입 시 의식의 끈을 잡고 들어가면, 빠르게 렘에 직진하는 모닝냅 특성과 결합해 작동합니다.'
-        };
-      }
-      return { time: '—', sub: '권장 길이 아님', applicable: false,
-               reason: 'WILD는 본수면 5시간 이상 또는 90~180분 모닝냅 형태에서 가장 잘 작동합니다.' };
-    }
-    function techSSILD(bedMin, dur) {
-      if (dur >= 300) {
-        return {
-          time: minToHHMM(bedMin + 5*60),
-          sub: 'WBTB 후 다시 누울 때',
-          applicable: true,
-          reason: '시각 → 청각 → 신체감각을 짧게 몇 번, 길게 몇 번 순환한 뒤 그대로 잠듭니다. 감각을 만들지 말고 지금 있는 감각을 관찰만.'
-        };
-      }
-      return {
-        time: minToHHMM(bedMin),
-        sub: '취침 직전 감각 순환',
-        applicable: dur >= 60,
-        reason: '자기암시가 어색하거나 생각이 많아 잠이 깨는 사람에게 적합. 졸림을 유지하며 가볍게 관찰하는 것이 핵심.'
-      };
-    }
-    function techDEILD(bedMin, dur, cycles) {
-      const remEnds = cycles.flatMap(c => c.segments.filter(s => s.stage==='rem')).map(s => s.end);
-      if (remEnds.length === 0) {
-        return { time: '—', sub: '렘 도달 못함', applicable: false,
-                 reason: '렘에 닿지 않은 짧은 수면에서는 DEILD가 발동할 자리가 없습니다.' };
-      }
-      const lastRem = remEnds[remEnds.length - 1];
-      return {
-        time: '각 렘 직후',
-        sub: `예: ${minToHHMM(bedMin + lastRem)}`,
-        applicable: true,
-        reason: '꿈에서 깬 직후 몸을 움직이지 않고 방금 꿈의 감각을 붙잡아 다시 들어가는 재진입 기술. 깬 것 같으면 반드시 RC를 먼저.'
-      };
-    }
-    function techDILD(bedMin, dur, cycles) {
-      const fullCycles = cycles.filter(c => !c.partial).length;
-      if (fullCycles < 4) {
-        return {
-          time: minToHHMM(bedMin + dur),
-          sub: '주기 부족 · 회상 약함',
-          applicable: false,
-          reason: '4번째 주기에 닿지 못하면 후반 렘이 짧아 꿈 회상이 잘 안 됩니다. 7~8시간 수면을 권장합니다.'
-        };
-      }
-      const c4end = cycles[3].end;
-      return {
-        time: minToHHMM(bedMin + c4end),
-        sub: '4번째 주기 끝 · 풍성한 회상',
-        applicable: true,
-        reason: '꿈일기 · RC · MILD가 쌓여 자각으로 이어지는 결과론적 접근. 후반 렘이 가장 길고 또렷한 이 무렵의 자연 기상이 회상력의 황금 구간입니다.'
-      };
-    }
-    function techNap(bedMin, dur) {
-      const wake = bedMin + dur;
-      return {
-        time: minToHHMM(wake),
-        sub: '+60~90분 추가 수면',
-        applicable: dur >= 240,
-        reason: '평소보다 일찍 일어난 뒤 다시 누우면 몸은 곧장 렘으로 직진(렘 반동). 깨어 있던 직전 의도가 그대로 꿈으로 이어지는 황금 구간.'
-      };
-    }
-
-    const TECHNIQUES = [
-      { code: 'MILD',  title: '의도 심기',           grade: 'A', fn: techMILD  },
-      { code: 'WBTB',  title: '후반 렘 활용 깸',     grade: 'A', fn: techWBTB  },
-      { code: 'WILD',  title: '의식 유지 진입',      grade: 'C', fn: techWILD  },
-      { code: 'SSILD', title: '감각 순환 진입',      grade: 'B', fn: techSSILD },
-      { code: 'DEILD', title: '꿈 재진입',           grade: 'B', fn: techDEILD },
-      { code: 'DILD',  title: '자연 자각 · 풍성한 회상', grade: 'A', fn: techDILD  },
-      { code: 'NAP',   title: '모닝냅 (렘 반동)',    grade: 'A', fn: techNap   },
-      { code: 'TLR',   title: '단서 연결 자각',      grade: 'B', fn: techTLR   },
-    ];
-
-    // ---------- Render ----------
-    const SVG_W = 1000, SVG_H = 340;
-    const M = { l: 50, r: 24, t: 36, b: 60 };
-    const PLOT_W = SVG_W - M.l - M.r;
-    const PLOT_H = SVG_H - M.t - M.b;
-    const Y = {
-      awake: M.t + 10,
-      rem:   M.t + 44,
-      light: M.t + PLOT_H * 0.55,
-      deep:  M.t + PLOT_H - 4,
-    };
-
-    function render() {
-      const bedStr = document.getElementById('bedtime').value || '23:00';
-      const dur = parseInt(document.getElementById('duration').value, 10);
-      const bedMin = bedtimeToMin(bedStr);
-      const cycles = buildCycles(dur);
-
-      // Slider visual fill
-      const slider = document.getElementById('duration');
-      const pct = ((dur - 30) / (720 - 30)) * 100;
-      slider.style.setProperty('--p', pct + '%');
-
-      document.getElementById('dur-display').textContent = fmtDur(dur);
-
-      const wake = bedMin + dur;
-      document.getElementById('wake-time').textContent = minToHHMM(wake);
-      const fullCycles = cycles.filter(c => !c.partial).length;
-      const partial = cycles.some(c => c.partial);
-      document.getElementById('cycle-count').textContent = `${fullCycles}${partial ? '.5' : ''} 주기`;
-      const totalRem = cycles.reduce((s,c) => s + c.segments.filter(g => g.stage==='rem').reduce((a,g) => a + (g.end-g.start), 0), 0);
-      document.getElementById('total-rem').textContent = fmtDur(totalRem);
-      document.getElementById('rem-ratio').textContent = dur > 0 ? `${Math.round(totalRem/dur*100)}%` : '—';
-
-      // SVG
-      const svg = document.getElementById('hypnogram');
-      const x = (m) => M.l + (m / Math.max(dur,30)) * PLOT_W;
-
-      const points = [];
-      let prevY = Y.awake;
-      points.push([M.l, Y.awake]);
-      cycles.forEach(c => {
-        c.segments.forEach(seg => {
-          const yv = Y[seg.stage];
-          points.push([x(seg.start), prevY]);
-          points.push([x(seg.start) + 4, yv]);
-          points.push([x(seg.end) - 4,  yv]);
-          prevY = yv;
-        });
-      });
-      points.push([x(dur), prevY]);
-      points.push([x(dur), Y.awake]);
-
-      const parts = [];
-
-      const stages = [
-        { label:'각성', y: Y.awake },
-        { label:'렘',   y: Y.rem },
-        { label:'얕은', y: Y.light },
-        { label:'깊은', y: Y.deep },
       ];
-      stages.forEach(s => {
-        parts.push(`<line x1="${M.l}" x2="${SVG_W-M.r}" y1="${s.y}" y2="${s.y}" stroke="#eaeaef" stroke-width="1"/>`);
-        parts.push(`<text x="${M.l-10}" y="${s.y+4}" text-anchor="end" font-size="11" fill="#86868b" font-family="Pretendard, sans-serif">${s.label}</text>`);
-      });
 
-      // WBTB/WILD band
-      if (dur >= 270) {
-        const bx1 = x(Math.min(dur, Math.floor(4.5*60)));
-        const bx2 = x(Math.min(dur, 6*60));
-        if (bx2 > bx1) {
-          parts.push(`<rect x="${bx1}" y="${M.t}" width="${bx2-bx1}" height="${PLOT_H}" fill="#5e5ce6" opacity="0.07"/>`);
-          parts.push(`<text x="${(bx1+bx2)/2}" y="${M.t-6}" text-anchor="middle" font-size="10.5" fill="#5e5ce6" font-family="Pretendard, sans-serif" font-weight="700" letter-spacing="0.5">WBTB · WILD</text>`);
+      const $ = (id) => document.getElementById(id);
+      let statusTimer = 0;
+
+      function pad(value) {
+        return String(value).padStart(2, "0");
+      }
+
+      function toClock(totalMinutes) {
+        const time = ((Math.round(totalMinutes) % 1440) + 1440) % 1440;
+        return `${pad(Math.floor(time / 60))}:${pad(time % 60)}`;
+      }
+
+      function parseClock(value) {
+        const match = /^(\d{1,2}):(\d{2})$/.exec(value || "");
+        if (!match) return 23 * 60;
+        const hour = Math.min(23, Math.max(0, Number(match[1])));
+        const minute = Math.min(59, Math.max(0, Number(match[2])));
+        return hour * 60 + minute;
+      }
+
+      function formatDuration(minutes) {
+        const safe = Math.max(0, Math.round(minutes));
+        const hours = Math.floor(safe / 60);
+        const mins = safe % 60;
+        if (!hours) return `${mins}분`;
+        if (!mins) return `${hours}시간`;
+        return `${hours}시간 ${mins}분`;
+      }
+
+      function addSegment(list, stage, start, end) {
+        if (end > start) list.push({ stage, start, end });
+      }
+
+      function buildCycles(totalMinutes) {
+        const cycles = [];
+        for (let start = 0, index = 0; start < totalMinutes; start += CYCLE_MIN, index += 1) {
+          const end = Math.min(totalMinutes, start + CYCLE_MIN);
+          const remLength = REM_BY_CYCLE[index] ?? 45;
+          const nremLength = CYCLE_MIN - remLength;
+          const remStart = start + nremLength;
+          const deepRatio = Math.max(0.12, 0.48 - index * 0.08);
+          const lightAEnd = Math.min(end, start + Math.round(nremLength * 0.34));
+          const deepEnd = Math.min(end, lightAEnd + Math.round(nremLength * deepRatio));
+          const segments = [];
+
+          addSegment(segments, "light", start, lightAEnd);
+          addSegment(segments, "deep", lightAEnd, deepEnd);
+          addSegment(segments, "light", deepEnd, Math.min(end, remStart));
+          addSegment(segments, "rem", Math.max(start, remStart), end);
+
+          cycles.push({
+            index,
+            start,
+            end,
+            partial: end - start < CYCLE_MIN,
+            segments
+          });
+        }
+        return cycles;
+      }
+
+      function getCycleGuide(cycle) {
+        if (cycle.partial) return "일부 주기입니다. 렘수면이 짧거나 없을 수 있어요.";
+        if (cycle.index === 0) return "잠에 드는 초반입니다. 자기 전 MILD와 꿈 기록 준비에 적합합니다.";
+        if (cycle.index === 1) return "꿈이 조금씩 선명해집니다. 무리해서 깨기보다는 잠을 이어가세요.";
+        if (cycle.index === 2) return "WBTB를 준비하기 좋은 구간입니다. 짧게 깼다가 다시 잠드는 방식과 맞습니다.";
+        if (cycle.index === 3) return "DILD 가능성이 높아지는 구간입니다. 꿈 회상과 현실 확인이 힘을 받습니다.";
+        return "뒤쪽 렘수면이 길어집니다. 자연 각성, DEILD, 꿈 기록에 특히 좋습니다.";
+      }
+
+      function getBestWindow(cycles, bedMin, duration) {
+        if (duration >= 360) {
+          return `${toClock(bedMin + 270)} - ${toClock(bedMin + 360)}`;
+        }
+        const remSegments = cycles.flatMap((cycle) => cycle.segments.filter((s) => s.stage === "rem"));
+        const lastRem = remSegments[remSegments.length - 1];
+        return lastRem ? `${toClock(bedMin + lastRem.start)} - ${toClock(bedMin + lastRem.end)}` : "수면 시간 부족";
+      }
+
+      function setStatus(message) {
+        const status = $("status");
+        if (!status) return;
+        status.textContent = message;
+        window.clearTimeout(statusTimer);
+        statusTimer = window.setTimeout(() => {
+          status.textContent = "";
+        }, 3600);
+      }
+
+      function highlightPreset(duration) {
+        document.querySelectorAll("[data-duration]").forEach((button) => {
+          const isActive = Number(button.dataset.duration) === duration;
+          button.classList.toggle("active", isActive);
+          button.setAttribute("aria-pressed", String(isActive));
+        });
+      }
+
+      function getCycleRows(cycles, bedMin) {
+        return cycles.map((cycle) => {
+          const rem = cycle.segments.find((segment) => segment.stage === "rem");
+          const remHtml = rem
+            ? `<strong>${toClock(bedMin + rem.start)} - ${toClock(bedMin + rem.end)}</strong> (${formatDuration(rem.end - rem.start)})`
+            : "렘수면 전";
+          const remText = rem
+            ? `${toClock(bedMin + rem.start)} - ${toClock(bedMin + rem.end)} (${formatDuration(rem.end - rem.start)})`
+            : "렘수면 전";
+          const rowClass = rem && cycle.index >= 3 ? " class=\"focus\"" : "";
+          const cycleName = `${cycle.index + 1}주기${cycle.partial ? " 일부" : ""}`;
+
+          return {
+            cycleName,
+            timeText: `${toClock(bedMin + cycle.start)} - ${toClock(bedMin + cycle.end)}`,
+            remText,
+            remHtml,
+            guide: getCycleGuide(cycle),
+            rowClass,
+            focus: Boolean(rem && cycle.index >= 3)
+          };
+        });
+      }
+
+      function renderTable(cycles, bedMin) {
+        const body = $("cycle-body");
+        if (!body) return;
+
+        body.innerHTML = getCycleRows(cycles, bedMin).map((row) => {
+          return `
+            <tr${row.rowClass}>
+              <th scope="row">${row.cycleName}</th>
+              <td class="time-cell">${row.timeText}</td>
+              <td class="rem-cell">${row.remHtml}</td>
+              <td>${row.guide}</td>
+            </tr>
+          `;
+        }).join("");
+      }
+
+      function renderChart(cycles, bedMin, duration) {
+        const svg = $("hypnogram");
+        const tooltip = $("tooltip");
+        if (!svg || !tooltip) return;
+
+        const width = 960;
+        const height = 320;
+        const margin = { left: 60, right: 24, top: 28, bottom: 58 };
+        const plotWidth = width - margin.left - margin.right;
+        const plotHeight = height - margin.top - margin.bottom;
+        const y = {
+          awake: margin.top + 8,
+          rem: margin.top + 45,
+          light: margin.top + plotHeight * 0.55,
+          deep: margin.top + plotHeight - 10
+        };
+        const x = (minute) => margin.left + (minute / Math.max(duration, 30)) * plotWidth;
+        const parts = [];
+
+        [
+          ["각성", y.awake],
+          ["렘", y.rem],
+          ["얕은 수면", y.light],
+          ["깊은 수면", y.deep]
+        ].forEach(([label, yPos]) => {
+          parts.push(`<line x1="${margin.left}" x2="${width - margin.right}" y1="${yPos}" y2="${yPos}" stroke="#e6ebf2" stroke-width="1"></line>`);
+          parts.push(`<text x="${margin.left - 10}" y="${yPos + 4}" text-anchor="end" font-size="12" fill="#7b8794">${label}</text>`);
+        });
+
+        if (duration >= 270) {
+          const bandStart = x(270);
+          const bandEnd = x(Math.min(duration, 360));
+          if (bandEnd > bandStart) {
+            parts.push(`<rect x="${bandStart}" y="${margin.top}" width="${bandEnd - bandStart}" height="${plotHeight}" rx="6" fill="#0f766e" opacity="0.1"></rect>`);
+            parts.push(`<text x="${(bandStart + bandEnd) / 2}" y="${margin.top - 8}" text-anchor="middle" font-size="12" fill="#0f766e" font-weight="800">WBTB</text>`);
+          }
+        }
+
+        const points = [[margin.left, y.awake]];
+        let previousY = y.awake;
+
+        cycles.forEach((cycle, index) => {
+          if (index > 0) {
+            parts.push(`<line x1="${x(cycle.start)}" x2="${x(cycle.start)}" y1="${margin.top}" y2="${margin.top + plotHeight}" stroke="#d8dee8" stroke-dasharray="3 5"></line>`);
+          }
+
+          cycle.segments.forEach((segment) => {
+            const currentY = y[segment.stage];
+            points.push([x(segment.start), previousY]);
+            points.push([x(segment.start) + 4, currentY]);
+            points.push([Math.max(x(segment.start) + 4, x(segment.end) - 4), currentY]);
+            previousY = currentY;
+
+            if (segment.stage === "rem") {
+              const rectX = x(segment.start);
+              const rectW = Math.max(2, x(segment.end) - rectX);
+              const tip = `${cycle.index + 1}주기 렘수면 ${toClock(bedMin + segment.start)} - ${toClock(bedMin + segment.end)} (${formatDuration(segment.end - segment.start)})`;
+              parts.push(`<rect x="${rectX}" y="${y.rem - 6}" width="${rectW}" height="12" rx="6" fill="#b83280" data-tip="${tip}"></rect>`);
+              if (rectW > 58) {
+                parts.push(`<text x="${rectX + rectW / 2}" y="${y.rem - 12}" text-anchor="middle" font-size="11" fill="#b83280" font-weight="800">${toClock(bedMin + segment.start)}</text>`);
+              }
+            }
+          });
+
+          const labelX = x((cycle.start + cycle.end) / 2);
+          parts.push(`<text x="${labelX}" y="${margin.top + plotHeight + 26}" text-anchor="middle" font-size="12" fill="#8a93a3">${cycle.index + 1}주기</text>`);
+        });
+
+        points.push([x(duration), previousY]);
+        points.push([x(duration), y.awake]);
+        const path = points.map((point, index) => `${index ? "L" : "M"}${point[0].toFixed(1)} ${point[1].toFixed(1)}`).join(" ");
+
+        parts.push(`<path d="${path}" fill="none" stroke="#17191f" stroke-width="2" stroke-linejoin="round"></path>`);
+        parts.push(`<line x1="${x(duration)}" x2="${x(duration)}" y1="${margin.top}" y2="${margin.top + plotHeight}" stroke="#17191f" stroke-width="1.5"></line>`);
+        parts.push(`<text x="${margin.left}" y="${height - 12}" text-anchor="start" font-size="13" fill="#17191f" font-weight="800">${toClock(bedMin)}</text>`);
+        parts.push(`<text x="${x(duration)}" y="${height - 12}" text-anchor="end" font-size="13" fill="#17191f" font-weight="800">${toClock(bedMin + duration)} 기상</text>`);
+
+        svg.innerHTML = parts.join("");
+
+        svg.querySelectorAll("[data-tip]").forEach((node) => {
+          const show = (event) => {
+            const rect = svg.parentElement.getBoundingClientRect();
+            const clientX = event.clientX ?? event.touches?.[0]?.clientX ?? rect.left + rect.width / 2;
+            const clientY = event.clientY ?? event.touches?.[0]?.clientY ?? rect.top + 80;
+            tooltip.textContent = node.getAttribute("data-tip") || "";
+            tooltip.style.left = `${clientX - rect.left}px`;
+            tooltip.style.top = `${clientY - rect.top}px`;
+            tooltip.classList.add("on");
+          };
+          node.style.cursor = "pointer";
+          node.addEventListener("mouseenter", show);
+          node.addEventListener("mousemove", show);
+          node.addEventListener("click", show);
+          node.addEventListener("mouseleave", () => tooltip.classList.remove("on"));
+        });
+      }
+
+      function renderTech(ctx) {
+        const grid = $("tech-grid");
+        if (!grid) return;
+
+        grid.innerHTML = TECHNIQUES.map((item) => {
+          const result = item.get(ctx);
+          return `
+            <article class="info-card${result.ok ? "" : " disabled"}">
+              <header>
+                <span class="code">${item.code}</span>
+                <span class="grade ${item.grade.toLowerCase()}">근거 ${item.grade}</span>
+              </header>
+              <div class="tech-time">${result.time}<small>${result.sub}</small></div>
+              <h3>${item.title}</h3>
+              <p>${result.desc}</p>
+            </article>
+          `;
+        }).join("");
+      }
+
+      function getContext() {
+        const bedInput = $("bedtime");
+        const durationInput = $("duration");
+        const duration = Number(durationInput?.value || 450);
+        const bedMin = parseClock(bedInput?.value || "23:00");
+        return {
+          bedMin,
+          duration,
+          cycles: buildCycles(duration)
+        };
+      }
+
+      function render(options = {}) {
+        const durationInput = $("duration");
+        const durationOutput = $("duration-output");
+        if (!durationInput || !durationOutput) return;
+
+        const ctx = getContext();
+        const fill = ((ctx.duration - Number(durationInput.min)) / (Number(durationInput.max) - Number(durationInput.min))) * 100;
+        durationInput.style.setProperty("--fill", `${fill}%`);
+        durationOutput.textContent = formatDuration(ctx.duration);
+        highlightPreset(ctx.duration);
+
+        const totalRem = ctx.cycles.reduce((sum, cycle) => {
+          return sum + cycle.segments.filter((segment) => segment.stage === "rem").reduce((subtotal, segment) => subtotal + segment.end - segment.start, 0);
+        }, 0);
+        const fullCycles = ctx.cycles.filter((cycle) => !cycle.partial).length;
+        const hasPartial = ctx.cycles.some((cycle) => cycle.partial);
+
+        $("wake-time").textContent = toClock(ctx.bedMin + ctx.duration);
+        $("cycle-count").textContent = `${fullCycles}${hasPartial ? "+일부" : ""}주기`;
+        $("total-rem").textContent = formatDuration(totalRem);
+        $("best-window").textContent = getBestWindow(ctx.cycles, ctx.bedMin, ctx.duration);
+
+        renderTable(ctx.cycles, ctx.bedMin);
+        renderChart(ctx.cycles, ctx.bedMin, ctx.duration);
+        renderTech(ctx);
+
+        if (options.announce) {
+          setStatus("렘수면 주기표를 다시 계산했습니다.");
         }
       }
 
-      // REM bands
-      cycles.forEach(c => {
-        c.segments.filter(s => s.stage==='rem').forEach(rem => {
-          const x1 = x(rem.start), x2 = x(rem.end);
-          parts.push(`<rect x="${x1}" y="${Y.rem-3}" width="${x2-x1}" height="6" fill="#bf5af2" rx="3" data-tip="${c.index+1}번째 렘 · ${minToHHMM(bedMin+rem.start)}–${minToHHMM(bedMin+rem.end)} (${rem.end-rem.start}분)"/>`);
-        });
-      });
-
-      // Hypnogram line
-      const d = points.map((p,i) => (i===0?'M':'L') + p[0].toFixed(1) + ' ' + p[1].toFixed(1)).join(' ');
-      parts.push(`<path d="${d}" fill="none" stroke="#1d1d1f" stroke-width="1.6" stroke-linejoin="round"/>`);
-
-      // Cycle separators + labels
-      const showCycleLabels = dur >= 90;
-      cycles.forEach((c,i) => {
-        if (i>0) parts.push(`<line x1="${x(c.start)}" x2="${x(c.start)}" y1="${M.t}" y2="${M.t+PLOT_H}" stroke="#eaeaef" stroke-dasharray="2 4" />`);
-        if (showCycleLabels) {
-          const cx = x((c.start + c.end)/2);
-          parts.push(`<text x="${cx}" y="${M.t+PLOT_H+22}" text-anchor="middle" font-size="11" fill="#86868b" font-family="Pretendard, sans-serif">${c.index+1}주기</text>`);
-        }
-      });
-
-      parts.push(`<line x1="${x(dur)}" x2="${x(dur)}" y1="${M.t}" y2="${M.t+PLOT_H}" stroke="#1d1d1f" stroke-width="1"/>`);
-      parts.push(`<text x="${M.l}" y="${M.t+PLOT_H+40}" text-anchor="start" font-size="11" fill="#1d1d1f" font-family="Pretendard, sans-serif" font-weight="600">${minToHHMM(bedMin)}<tspan fill="#86868b" font-weight="400">  · MILD · TLR</tspan></text>`);
-      parts.push(`<text x="${x(dur)}" y="${M.t+PLOT_H+40}" text-anchor="end" font-size="11" fill="#1d1d1f" font-family="Pretendard, sans-serif" font-weight="600">${minToHHMM(wake)}<tspan fill="#86868b" font-weight="400">  · 기상</tspan></text>`);
-
-      // DILD marker
-      if (cycles.length >= 4 && !cycles[3].partial) {
-        const dx = x(cycles[3].end);
-        parts.push(`<line x1="${dx}" x2="${dx}" y1="${M.t-4}" y2="${M.t+PLOT_H+4}" stroke="#bf5af2" stroke-width="1.5" stroke-dasharray="4 4"/>`);
-        parts.push(`<g transform="translate(${dx}, ${M.t-12})">
-          <rect x="-26" y="-12" width="52" height="18" rx="9" fill="#bf5af2"/>
-          <text x="0" y="1" text-anchor="middle" font-size="10.5" fill="white" font-family="Pretendard, sans-serif" font-weight="700" letter-spacing="0.5">DILD</text>
-        </g>`);
+      function tableText() {
+        const ctx = getContext();
+        const rows = getCycleRows(ctx.cycles, ctx.bedMin).map((row) => `${row.cycleName}: ${row.timeText} / 렘수면 ${row.remText}`);
+        return [
+          "렘수면 주기표",
+          `취침 ${toClock(ctx.bedMin)} / 기상 ${toClock(ctx.bedMin + ctx.duration)} / 수면 ${formatDuration(ctx.duration)}`,
+          ...rows
+        ].join("\n");
       }
 
-      // DEILD micro-ticks
-      cycles.forEach(c => {
-        c.segments.filter(s => s.stage==='rem').forEach(rem => {
-          const dx = x(rem.end);
-          parts.push(`<polygon points="${dx-3},${Y.awake-12} ${dx+3},${Y.awake-12} ${dx},${Y.awake-6}" fill="#5e5ce6" opacity="0.5"><title>DEILD 가능 시점</title></polygon>`);
+      function wrapText(context, text, maxWidth) {
+        const words = String(text).split(/\s+/);
+        const lines = [];
+        let line = "";
+
+        words.forEach((word) => {
+          const test = line ? `${line} ${word}` : word;
+          if (context.measureText(test).width <= maxWidth) {
+            line = test;
+            return;
+          }
+          if (line) lines.push(line);
+
+          let chunk = "";
+          [...word].forEach((char) => {
+            const next = chunk + char;
+            if (context.measureText(next).width > maxWidth && chunk) {
+              lines.push(chunk);
+              chunk = char;
+            } else {
+              chunk = next;
+            }
+          });
+          line = chunk;
         });
-      });
 
-      svg.innerHTML = parts.join('\n');
+        if (line) lines.push(line);
+        return lines;
+      }
 
-      // Tooltip
-      const tip = document.getElementById('tooltip');
-      const wrap = svg.parentElement;
-      svg.querySelectorAll('rect[data-tip]').forEach(el => {
-        el.style.cursor = 'pointer';
-        el.addEventListener('mouseenter', () => { tip.textContent = el.getAttribute('data-tip'); tip.classList.add('on'); });
-        el.addEventListener('mousemove', (e) => {
-          const r = wrap.getBoundingClientRect();
-          tip.style.left = (e.clientX - r.left) + 'px';
-          tip.style.top = (e.clientY - r.top) + 'px';
+      function drawRoundRect(context, x, y, width, height, radius) {
+        const r = Math.min(radius, width / 2, height / 2);
+        context.beginPath();
+        context.moveTo(x + r, y);
+        context.arcTo(x + width, y, x + width, y + height, r);
+        context.arcTo(x + width, y + height, x, y + height, r);
+        context.arcTo(x, y + height, x, y, r);
+        context.arcTo(x, y, x + width, y, r);
+        context.closePath();
+      }
+
+      function canvasToBlob(canvas) {
+        return new Promise((resolve) => canvas.toBlob(resolve, "image/png", 1));
+      }
+
+      async function createTableImage() {
+        if (document.fonts?.ready) {
+          await document.fonts.ready;
+        }
+
+        const ctxData = getContext();
+        const rows = getCycleRows(ctxData.cycles, ctxData.bedMin);
+        const width = 1200;
+        const margin = 48;
+        const tableWidth = width - margin * 2;
+        const col = {
+          cycle: 130,
+          time: 220,
+          rem: 270,
+          guide: tableWidth - 130 - 220 - 270
+        };
+        const scale = Math.min(2, window.devicePixelRatio || 1);
+        const measureCanvas = document.createElement("canvas");
+        const measure = measureCanvas.getContext("2d");
+        measure.font = "24px 'Noto Sans KR', 'Malgun Gothic', sans-serif";
+
+        const guideLines = rows.map((row) => wrapText(measure, row.guide, col.guide - 36));
+        const rowHeights = guideLines.map((lines) => Math.max(74, 34 + lines.length * 25));
+        const height = 238 + 50 + rowHeights.reduce((sum, value) => sum + value, 0);
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width * scale;
+        canvas.height = height * scale;
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+
+        const context = canvas.getContext("2d");
+        context.scale(scale, scale);
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, width, height);
+
+        context.fillStyle = "#17191f";
+        context.font = "800 38px 'Noto Sans KR', 'Malgun Gothic', sans-serif";
+        context.fillText("렘수면 주기표", margin, 66);
+
+        context.fillStyle = "#5f6773";
+        context.font = "600 22px 'Noto Sans KR', 'Malgun Gothic', sans-serif";
+        context.fillText(`취침 ${toClock(ctxData.bedMin)}  ·  기상 ${toClock(ctxData.bedMin + ctxData.duration)}  ·  수면 ${formatDuration(ctxData.duration)}`, margin, 106);
+
+        const summary = [
+          ["완성 주기", $("cycle-count")?.textContent || ""],
+          ["총 렘수면", $("total-rem")?.textContent || ""],
+          ["집중 구간", $("best-window")?.textContent || ""]
+        ];
+        const chipY = 132;
+        let chipX = margin;
+        summary.forEach(([label, value]) => {
+          const text = `${label} ${value}`;
+          context.font = "700 18px 'Noto Sans KR', 'Malgun Gothic', sans-serif";
+          const chipWidth = Math.ceil(context.measureText(text).width) + 34;
+          drawRoundRect(context, chipX, chipY, chipWidth, 42, 21);
+          context.fillStyle = "#e9f0ff";
+          context.fill();
+          context.fillStyle = "#2563eb";
+          context.fillText(text, chipX + 17, chipY + 28);
+          chipX += chipWidth + 12;
         });
-        el.addEventListener('mouseleave', () => tip.classList.remove('on'));
-      });
 
-      renderTech(bedMin, dur, cycles);
-    }
+        let y = 198;
+        drawRoundRect(context, margin, y, tableWidth, height - y - margin, 8);
+        context.fillStyle = "#ffffff";
+        context.fill();
+        context.strokeStyle = "#d8dee8";
+        context.lineWidth = 2;
+        context.stroke();
 
-    function renderTech(bedMin, dur, cycles) {
-      const grid = document.getElementById('tech-grid');
-      const html = TECHNIQUES.map(t => {
-        const r = t.fn(bedMin, dur, cycles);
-        const disabled = !r.applicable;
-        const desc = disabled
-          ? `<span style="color:var(--text-3); font-weight:500;">이 수면 길이엔 권장되지 않습니다.</span> ${r.reason}`
-          : r.reason;
-        return `
-          <div class="tech-card ${disabled?'disabled':''}">
-            <div class="tech-row">
-              <span class="tech-name">${t.code}</span>
-              <span class="grade ${t.grade}">근거 ${t.grade}</span>
-            </div>
-            <div class="tech-time">${r.time}<small>${r.sub}</small></div>
-            <div class="tech-title">${t.title}</div>
-            <div class="tech-desc">${desc}</div>
-          </div>
-        `;
-      }).join('');
-      grid.innerHTML = html;
-    }
+        context.fillStyle = "#f8fafc";
+        context.fillRect(margin + 1, y + 1, tableWidth - 2, 50);
+        context.fillStyle = "#5f6773";
+        context.font = "800 18px 'Noto Sans KR', 'Malgun Gothic', sans-serif";
+        const xCycle = margin;
+        const xTime = xCycle + col.cycle;
+        const xRem = xTime + col.time;
+        const xGuide = xRem + col.rem;
+        context.fillText("주기", xCycle + 18, y + 32);
+        context.fillText("실제 시각", xTime + 18, y + 32);
+        context.fillText("렘수면 예상 시간", xRem + 18, y + 32);
+        context.fillText("활용 포인트", xGuide + 18, y + 32);
 
-    document.getElementById('bedtime').addEventListener('input', render);
-    document.getElementById('bedtime').addEventListener('change', render);
-    document.getElementById('duration').addEventListener('input', render);
-    render();
+        y += 50;
+        rows.forEach((row, index) => {
+          const rowHeight = rowHeights[index];
+          context.fillStyle = row.focus ? "#fdf2f8" : "#ffffff";
+          context.fillRect(margin + 1, y, tableWidth - 2, rowHeight);
+
+          context.strokeStyle = "#e8edf4";
+          context.lineWidth = 1;
+          context.beginPath();
+          context.moveTo(margin, y);
+          context.lineTo(margin + tableWidth, y);
+          context.stroke();
+
+          context.fillStyle = "#17191f";
+          context.font = "800 22px 'Noto Sans KR', 'Malgun Gothic', sans-serif";
+          context.fillText(row.cycleName, xCycle + 18, y + 43);
+
+          context.font = "700 21px 'Noto Sans KR', 'Malgun Gothic', sans-serif";
+          context.fillText(row.timeText, xTime + 18, y + 43);
+
+          context.fillStyle = row.remText === "렘수면 전" ? "#8a93a3" : "#b83280";
+          context.fillText(row.remText, xRem + 18, y + 43);
+
+          context.fillStyle = "#5f6773";
+          context.font = "500 20px 'Noto Sans KR', 'Malgun Gothic', sans-serif";
+          guideLines[index].forEach((line, lineIndex) => {
+            context.fillText(line, xGuide + 18, y + 34 + lineIndex * 25);
+          });
+
+          y += rowHeight;
+        });
+
+        context.fillStyle = "#8a93a3";
+        context.font = "500 16px 'Noto Sans KR', 'Malgun Gothic', sans-serif";
+        context.fillText("90분 주기 기준 예상값입니다. 실제 수면 패턴에 맞춰 15~30분씩 조정하세요.", margin, height - 24);
+
+        return canvas;
+      }
+
+      async function copyTable() {
+        try {
+          if (!navigator.clipboard?.write || !window.ClipboardItem) {
+            throw new Error("image clipboard unsupported");
+          }
+
+          const canvas = await createTableImage();
+          const blob = await canvasToBlob(canvas);
+          if (!blob) throw new Error("image creation failed");
+
+          await navigator.clipboard.write([
+            new window.ClipboardItem({ "image/png": blob })
+          ]);
+          setStatus("표 이미지를 클립보드에 복사했습니다.");
+        } catch (error) {
+          setStatus("이미지 복사가 브라우저에서 막혔어요. HTTPS로 게시한 주소에서 다시 눌러주세요.");
+        }
+      }
+
+      function init() {
+        const durationInput = $("duration");
+        const bedInput = $("bedtime");
+        const calculateButton = $("calculate");
+        const resetButton = $("reset");
+        const copyButton = $("copy-table");
+
+        if (!durationInput || !bedInput || !calculateButton || !resetButton || !copyButton) {
+          return;
+        }
+
+        bedInput.addEventListener("input", () => render());
+        bedInput.addEventListener("change", () => render({ announce: true }));
+        durationInput.addEventListener("input", () => render());
+        durationInput.addEventListener("change", () => render({ announce: true }));
+
+        document.querySelectorAll("[data-duration]").forEach((button) => {
+          button.addEventListener("click", () => {
+            durationInput.value = button.dataset.duration;
+            render({ announce: true });
+          });
+        });
+
+        calculateButton.addEventListener("click", () => {
+          render({ announce: true });
+          $("cycle-table")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+
+        resetButton.addEventListener("click", () => {
+          bedInput.value = "23:00";
+          durationInput.value = "450";
+          render({ announce: true });
+        });
+
+        copyButton.addEventListener("click", copyTable);
+        render();
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
+    })();
   </script>
-
-
-</body></html>
+</body>
+</html>
