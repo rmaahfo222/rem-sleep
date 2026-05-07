@@ -126,8 +126,8 @@
 
     .hero-grid {
       display: grid;
-      grid-template-columns: minmax(0, 0.9fr) minmax(360px, 1.1fr);
-      gap: clamp(26px, 5vw, 56px);
+      grid-template-columns: minmax(0, 0.92fr) minmax(430px, 1.08fr);
+      gap: clamp(28px, 5vw, 64px);
       align-items: center;
     }
 
@@ -147,7 +147,7 @@
     h1 {
       margin-bottom: 18px;
       max-width: 720px;
-      font-size: clamp(34px, 5.5vw, 62px);
+      font-size: clamp(34px, 4.8vw, 58px);
       line-height: 1.08;
       letter-spacing: 0;
     }
@@ -175,12 +175,23 @@
 
     .control-grid {
       display: grid;
-      grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
-      gap: 18px;
+      grid-template-columns: 1fr;
+      gap: 16px;
     }
 
     .field {
       min-width: 0;
+      padding: 18px;
+      background: var(--surface-2);
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      transition: border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .field:focus-within {
+      border-color: var(--accent);
+      background: #fff;
+      box-shadow: 0 0 0 4px var(--accent-soft);
     }
 
     .field label,
@@ -195,21 +206,26 @@
     .field input[type="time"] {
       width: 100%;
       min-height: 56px;
-      padding: 0 14px;
+      padding: 0 48px 0 14px;
       color: var(--text);
-      background: var(--surface-2);
-      border: 1px solid transparent;
+      background: #fff;
+      border: 1px solid var(--line-soft);
       border-radius: var(--radius);
-      font-size: clamp(26px, 4vw, 36px);
+      font-size: clamp(24px, 3vw, 30px);
       font-weight: 800;
       font-variant-numeric: tabular-nums;
       outline: none;
     }
 
+    .field input[type="time"]::-webkit-calendar-picker-indicator {
+      width: 24px;
+      height: 24px;
+      margin-left: 6px;
+      opacity: 0.72;
+    }
+
     .field input[type="time"]:focus {
       border-color: var(--accent);
-      background: var(--surface);
-      box-shadow: 0 0 0 4px var(--accent-soft);
     }
 
     .range-head {
@@ -231,7 +247,7 @@
       -webkit-appearance: none;
       width: 100%;
       height: 6px;
-      margin: 18px 0 10px;
+      margin: 22px 0 10px;
       border-radius: 999px;
       background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--fill, 60%), #d6dce6 var(--fill, 60%), #d6dce6 100%);
       outline: none;
@@ -326,7 +342,7 @@
 
     .summary {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 1px;
       margin-top: 26px;
       border: 1px solid var(--line-soft);
@@ -351,8 +367,9 @@
 
     .summary-item strong {
       display: block;
-      font-size: clamp(18px, 2.4vw, 24px);
+      font-size: clamp(18px, 2vw, 22px);
       font-weight: 900;
+      line-height: 1.35;
       font-variant-numeric: tabular-nums;
       word-break: keep-all;
     }
@@ -719,6 +736,12 @@
       }
     }
 
+    @media (max-width: 1240px) {
+      .summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
     @media (max-width: 640px) {
       .wrap {
         width: min(100% - 28px, var(--max));
@@ -799,8 +822,9 @@
                 <span id="duration-label">수면 시간</span>
                 <output id="duration-output" for="duration">7시간 30분</output>
               </div>
-              <input type="range" id="duration" min="180" max="720" step="30" value="450" aria-labelledby="duration-label">
+              <input type="range" id="duration" min="30" max="720" step="30" value="450" aria-labelledby="duration-label">
               <div class="ticks" aria-hidden="true">
+                <span>30분</span>
                 <span>3시간</span>
                 <span>6시간</span>
                 <span>9시간</span>
